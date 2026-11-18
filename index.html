@@ -272,10 +272,10 @@
               <span class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-500 text-sm flex items-center justify-center font-bold">1</span>
               <span>Langkah 1: Cek & Install Git di Komputer</span>
             </h3>
-            <!-- OS Switcher -->
+            <!-- OS Switcher (Windows dulu baru macOS) -->
             <div class="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-gh-bg border border-slate-200 dark:border-gh-border">
-              <button type="button" id="os-btn-mac" onclick="switchOsTab('mac')" class="px-3 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white transition">🍎 macOS</button>
-              <button type="button" id="os-btn-win" onclick="switchOsTab('win')" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-600 dark:text-gh-muted hover:text-slate-900 dark:hover:text-white transition">🪟 Windows</button>
+              <button type="button" id="os-btn-win" onclick="switchOsTab('win')" class="px-3 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white transition">🪟 Windows</button>
+              <button type="button" id="os-btn-mac" onclick="switchOsTab('mac')" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-600 dark:text-gh-muted hover:text-slate-900 dark:hover:text-white transition">🍎 macOS</button>
             </div>
           </div>
 
@@ -284,17 +284,8 @@
           </p>
           <div class="cmd-box" data-cmd="git --version"></div>
 
-          <!-- Panel macOS -->
-          <div id="os-panel-mac" class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-3">
-            <div class="font-bold text-sm text-blue-600 dark:text-gh-blue">🍎 Cara Install Git di macOS:</div>
-            <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
-              Jika muncul tulisan <code class="font-mono">git version 2.x.x</code>, berarti Git sudah siap! Jika belum ada atau muncul pop-up meminta instalasi <em>Command Line Developer Tools</em>, jalankan salah satu perintah ini di Terminal:
-            </p>
-            <div class="cmd-box" data-cmd="# Cara 1: Bawaan Apple Xcode Command Line Tools (Paling Mudah)&#10;xcode-select --install&#10;&#10;# Cara 2: Jika sudah menginstall Homebrew&#10;brew install git"></div>
-          </div>
-
-          <!-- Panel Windows -->
-          <div id="os-panel-win" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-3">
+          <!-- Panel Windows (Default Aktif) -->
+          <div id="os-panel-win" class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-3">
             <div class="font-bold text-sm text-blue-600 dark:text-gh-blue">🪟 Cara Install Git di Windows:</div>
             <ol class="text-xs text-slate-600 dark:text-gh-muted space-y-1.5 list-decimal list-inside leading-relaxed">
               <li>Buka browser dan kunjungi situs resmi <a href="https://git-scm.com/downloads/win" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline font-semibold">git-scm.com/downloads/win</a>.</li>
@@ -302,6 +293,15 @@
               <li>Klik tombol <strong>Next</strong> terus sampai <strong>Install</strong> (pengaturan bawaannya sudah sangat ideal untuk pemula).</li>
               <li>Setelah selesai, <strong>tutup dan buka ulang VS Code</strong>, lalu ketik <code class="font-mono text-emerald-500">git --version</code> di Terminal VS Code untuk memastikan versi Git sudah muncul.</li>
             </ol>
+          </div>
+
+          <!-- Panel macOS -->
+          <div id="os-panel-mac" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-3">
+            <div class="font-bold text-sm text-blue-600 dark:text-gh-blue">🍎 Cara Install Git di macOS:</div>
+            <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+              Jika muncul tulisan <code class="font-mono">git version 2.x.x</code>, berarti Git sudah siap! Jika belum ada atau muncul pop-up meminta instalasi <em>Command Line Developer Tools</em>, jalankan salah satu perintah ini di Terminal:
+            </p>
+            <div class="cmd-box" data-cmd="# Cara 1: Bawaan Apple Xcode Command Line Tools (Paling Mudah)&#10;xcode-select --install&#10;&#10;# Cara 2: Jika sudah menginstall Homebrew&#10;brew install git"></div>
           </div>
         </div>
 
