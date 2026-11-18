@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kamus & Modul Belajar Git, VS Code, Branch, & Deploy</title>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            gh: {
+              bg: '#0d1117',
+              surface: '#161b22',
+              surfaceHover: '#1f242c',
+              border: '#30363d',
+              text: '#e6edf3',
+              muted: '#8b949e',
+              blue: '#58a6ff',
+              green: '#3fb950',
+              purple: '#bc8cff',
+              amber: '#d29922',
+              red: '#f85149',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar ala VS Code */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(139, 148, 158, 0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 148, 158, 0.5);
+    }
+
+    /* Animasi Transisi Halus untuk SVG Branch Simulator */
+    .branch-node {
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .branch-line {
+      transition: stroke-dashoffset 0.5s ease, opacity 0.4s ease;
+    }
+    
+    /* Custom Checkbox Styling */
+    .step-checkbox:checked + div {
+      border-color: #3fb950;
+    }
+    .dark .step-checkbox:checked + div {
+      background-color: rgba(63, 185, 80, 0.08);
+    }
+    html:not(.dark) .step-checkbox:checked + div {
+      background-color: rgba(34, 197, 94, 0.06);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-gh-bg dark:text-gh-text font-sans antialiased overflow-x-hidden selection:bg-blue-500/30 selection:text-blue-200">
+
+  <!-- Toast Notification (Pengganti alert) -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl bg-slate-900 dark:bg-gh-surface border border-slate-700 dark:border-gh-border text-white text-sm font-medium">
+      <span id="toast-icon" class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+      </span>
+      <span id="toast-message">Perintah berhasil disalin!</span>
+    </div>
+  </div>
+
+  <!-- Mobile Top Navigation Bar -->
+  <header class="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white/90 dark:bg-gh-surface/90 backdrop-blur-md border-b border-slate-200 dark:border-gh-border">
+    <div class="flex items-center gap-2.5">
+      <button id="mobile-menu-btn" aria-label="Buka Menu" class="p-2 rounded-lg text-slate-600 dark:text-gh-text hover:bg-slate-100 dark:hover:bg-gh-surfaceHover">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+      <div class="flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow">G</span>
+        <span class="font-bold text-sm tracking-tight">Kamus Git & VS Code</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="mobile-progress-badge" class="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-gh-green">0%</span>
+      <button onclick="toggleTheme()" aria-label="Ganti Tema" class="p-2 rounded-lg bg-slate-100 dark:bg-gh-bg text-slate-600 dark:text-gh-muted hover:text-blue-500">
+        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Sidebar Backdrop -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs hidden lg:hidden" onclick="closeMobileSidebar()"></div>
+
+  <!-- Left Sidebar Navigation -->
+  <aside id="sidebar" class="fixed top-0 left-0 z-50 h-screen w-72 bg-white dark:bg-gh-surface border-r border-slate-200 dark:border-gh-border flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+    <!-- Brand Header -->
+    <div class="p-5 border-b border-slate-200 dark:border-gh-border flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        </div>
+        <div>
+          <h1 class="font-bold text-sm leading-tight text-slate-900 dark:text-white">Modul Git & VS Code</h1>
+          <p class="text-[11px] text-slate-500 dark:text-gh-muted font-medium">Panduan Praktis Pemula</p>
+        </div>
+      </div>
+      <button onclick="toggleTheme()" title="Ganti Mode Terang/Gelap" class="hidden lg:flex p-2 rounded-lg bg-slate-100 dark:bg-gh-bg text-slate-600 dark:text-gh-muted hover:text-blue-500 dark:hover:text-gh-blue transition">
+        <svg class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg class="w-4 h-4 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+      </button>
+    </div>
+
+    <!-- Learning Progress Tracker Card -->
+    <div class="p-4 mx-3 mt-4 rounded-xl bg-slate-100/80 dark:bg-gh-bg border border-slate-200 dark:border-gh-border">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-xs font-semibold text-slate-700 dark:text-gh-text">Progres Praktikmu</span>
+        <span id="progress-text" class="text-xs font-mono font-bold text-emerald-600 dark:text-gh-green">0% (0/0)</span>
+      </div>
+      <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-gh-border overflow-hidden">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <div class="flex items-center justify-between mt-2">
+        <p class="text-[11px] text-slate-500 dark:text-gh-muted">Centang langkah yang dicoba</p>
+        <button onclick="resetProgress()" class="text-[11px] text-slate-400 hover:text-red-400 underline transition">Reset</button>
+      </div>
+    </div>
+
+    <!-- Chapter Navigation Menu -->
+    <nav id="sidebar-nav" class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-sm">
+      <a href="#bab-1" onclick="closeMobileSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 dark:text-gh-muted hover:bg-slate-100 dark:hover:bg-gh-surfaceHover transition">
+        <span class="w-6 h-6 rounded-lg bg-blue-500/15 text-blue-600 dark:text-gh-blue font-mono text-xs font-bold flex items-center justify-center shrink-0">01</span>
+        <span class="truncate">Kamus Dasar & VS Code</span>
+      </a>
+      <a href="#bab-2" onclick="closeMobileSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 dark:text-gh-muted hover:bg-slate-100 dark:hover:bg-gh-surfaceHover transition">
+        <span class="w-6 h-6 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-gh-green font-mono text-xs font-bold flex items-center justify-center shrink-0">02</span>
+        <span class="truncate">Upload Proyek dari Nol</span>
+      </a>
+      <a href="#bab-3" onclick="closeMobileSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 dark:text-gh-muted hover:bg-slate-100 dark:hover:bg-gh-surfaceHover transition">
+        <span class="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-600 dark:text-gh-amber font-mono text-xs font-bold flex items-center justify-center shrink-0">03</span>
+        <span class="truncate">Update, Pull, Clone & Undo</span>
+      </a>
+      <a href="#bab-4" onclick="closeMobileSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 dark:text-gh-muted hover:bg-slate-100 dark:hover:bg-gh-surfaceHover transition">
+        <span class="w-6 h-6 rounded-lg bg-purple-500/15 text-purple-600 dark:text-gh-purple font-mono text-xs font-bold flex items-center justify-center shrink-0">04</span>
+        <span class="truncate">Kupas Tuntas Branch</span>
+      </a>
+      <a href="#bab-5" onclick="closeMobileSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 dark:text-gh-muted hover:bg-slate-100 dark:hover:bg-gh-surfaceHover transition">
+        <span class="w-6 h-6 rounded-lg bg-pink-500/15 text-pink-600 dark:text-pink-400 font-mono text-xs font-bold flex items-center justify-center shrink-0">05</span>
+        <span class="truncate">Kamus Flag (-u, -m, -M)</span>
+      </a>
+      <a href="#bab-6" onclick="closeMobileSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 dark:text-gh-muted hover:bg-slate-100 dark:hover:bg-gh-surfaceHover transition">
+        <span class="w-6 h-6 rounded-lg bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 font-mono text-xs font-bold flex items-center justify-center shrink-0">06</span>
+        <span class="truncate">Deploy GitHub Pages & Vercel</span>
+      </a>
+      <a href="#bab-7" onclick="closeMobileSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 dark:text-gh-muted hover:bg-slate-100 dark:hover:bg-gh-surfaceHover transition">
+        <span class="w-6 h-6 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-mono text-xs font-bold flex items-center justify-center shrink-0">07</span>
+        <span class="truncate">Mini Kuis Pemahaman</span>
+      </a>
+    </nav>
+
+    <!-- Footer Note -->
+    <div class="p-4 border-t border-slate-200 dark:border-gh-border text-[11px] text-slate-500 dark:text-gh-muted">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Siap praktik langsung di VS Code</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Learning Content -->
+  <main class="lg:ml-72 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-20">
+
+      <!-- HERO SECTION -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-[#131b2e] to-[#1a1333] border border-slate-800 p-6 sm:p-10 text-white shadow-2xl">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-300 text-xs font-semibold mb-4">
+            <span>📘 Modul Interaktif Anti-Bingung</span>
+            <span>•</span>
+            <span>Edisi VS Code</span>
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-4">
+            Kamus & Modul Belajar <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400">Git, VS Code, Branch, & Deploy</span>
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mb-6">
+            Nggak perlu hafal mati perintah terminal! Di modul ini kamu bakal paham konsep Git pakai analogi sehari-hari, baca arti huruf warna-warni di VS Code, upload proyek dari nol, mainan <strong>Branch</strong> lewat simulator visual, paham arti kode aneh kayak <code class="px-1.5 py-0.5 rounded bg-white/10 text-emerald-300 font-mono text-xs">-u</code> dan <code class="px-1.5 py-0.5 rounded bg-white/10 text-emerald-300 font-mono text-xs">-m</code>, sampai website-mu online gratis di internet!
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="#bab-1" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition">
+              Mulai Belajar dari Bab 1 →
+            </a>
+            <a href="#bab-5" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold text-sm transition">
+              Cari Arti Flag (-u, -m, dll)
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           BAB 1: KAMUS DASAR & BAHASA VISUAL VS CODE
+           ===================================================================== -->
+      <section id="bab-1" class="scroll-mt-20 space-y-8">
+        <div class="border-b border-slate-200 dark:border-gh-border pb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-blue-600 dark:text-gh-blue">Bab 01 • Fondasi Utama</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Kamus Dasar & Bahasa Visual VS Code</h2>
+          <p class="text-slate-600 dark:text-gh-muted text-sm sm:text-base mt-2">
+            Sebelum ngetik perintah apapun, kenalan dulu sama istilah-istilah wajib biar nggak gagal paham pas baca tutorial atau error.
+          </p>
+        </div>
+
+        <!-- Analogi Singkat Git vs GitHub -->
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border shadow-xs">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="w-9 h-9 rounded-xl bg-orange-500/15 text-orange-500 flex items-center justify-center font-bold text-lg">🕰️</span>
+              <h3 class="font-bold text-lg">Apa itu Git?</h3>
+            </div>
+            <p class="text-sm text-slate-600 dark:text-gh-muted leading-relaxed">
+              <strong>Git adalah "Mesin Waktu"</strong> di dalam laptopmu. Dia mencatat setiap perubahan kode yang kamu simpan. Kalau kodenya tiba-tiba rusak, kamu bisa balik ke versi kemarin yang masih aman. Git bekerja <em>offline</em> di laptop.
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border shadow-xs">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center font-bold text-lg">☁️</span>
+              <h3 class="font-bold text-lg">Apa itu GitHub?</h3>
+            </div>
+            <p class="text-sm text-slate-600 dark:text-gh-muted leading-relaxed">
+              <strong>GitHub adalah "Google Drive-nya Programmer"</strong> di internet (cloud). Tempat menyimpan hasil catatan Git tadi secara online supaya nggak hilang kalau laptop rusak, bisa pamer portofolio, dan kerja bareng tim.
+            </p>
+          </div>
+        </div>
+
+        <!-- Kamus Istilah Penting (Dengan Search Real-Time) -->
+        <div class="space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h3 class="text-lg font-bold">📖 Kamus Istilah Wajib (Pakai Analogi Sehari-hari)</h3>
+            <div class="relative w-full sm:w-64">
+              <input type="text" id="term-search" placeholder="Cari istilah (misal: staging)..." class="w-full pl-9 pr-3 py-2 text-sm rounded-xl bg-white dark:bg-gh-surface border border-slate-300 dark:border-gh-border focus:outline-none focus:border-blue-500" />
+              <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+          </div>
+
+          <div id="terms-grid" class="grid sm:grid-cols-2 gap-3.5">
+            <!-- Diisi otomatis via JavaScript agar bisa difilter -->
+          </div>
+        </div>
+
+        <!-- Kamus Huruf & Warna di VS Code -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-5">
+          <div>
+            <h3 class="text-lg font-bold flex items-center gap-2">
+              <span>🎨 Kamus Huruf & Warna File di VS Code</span>
+            </h3>
+            <p class="text-sm text-slate-600 dark:text-gh-muted mt-1">
+              Pernah lihat nama file di Explorer VS Code tiba-tiba berubah warna jadi hijau atau kuning dan ada huruf kecil di kanannya? Ini artinya:
+            </p>
+          </div>
+
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <!-- U -->
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border flex items-start gap-3">
+              <span class="px-2 py-0.5 rounded font-mono font-bold text-xs bg-emerald-500/20 text-emerald-600 dark:text-gh-green shrink-0">U</span>
+              <div>
+                <div class="font-bold text-sm text-emerald-600 dark:text-gh-green">Untracked (Hijau)</div>
+                <p class="text-xs text-slate-600 dark:text-gh-muted mt-0.5">File <strong>baru banget dibuat</strong> dan belum pernah dicatat/dilacak oleh Git sama sekali.</p>
+              </div>
+            </div>
+            <!-- M -->
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border flex items-start gap-3">
+              <span class="px-2 py-0.5 rounded font-mono font-bold text-xs bg-amber-500/20 text-amber-600 dark:text-gh-amber shrink-0">M</span>
+              <div>
+                <div class="font-bold text-sm text-amber-600 dark:text-gh-amber">Modified (Kuning)</div>
+                <p class="text-xs text-slate-600 dark:text-gh-muted mt-0.5">File lama yang sudah ada di Git, tapi <strong>barusan kamu edit/ubah</strong> isinya.</p>
+              </div>
+            </div>
+            <!-- A -->
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border flex items-start gap-3">
+              <span class="px-2 py-0.5 rounded font-mono font-bold text-xs bg-emerald-500/20 text-emerald-600 dark:text-gh-green shrink-0">A</span>
+              <div>
+                <div class="font-bold text-sm text-emerald-600 dark:text-gh-green">Added (Hijau)</div>
+                <p class="text-xs text-slate-600 dark:text-gh-muted mt-0.5">File baru yang sudah masuk ke <strong>Staging Area</strong> (<code class="font-mono">git add</code>) dan siap di-commit.</p>
+              </div>
+            </div>
+            <!-- D -->
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border flex items-start gap-3">
+              <span class="px-2 py-0.5 rounded font-mono font-bold text-xs bg-red-500/20 text-red-600 dark:text-gh-red shrink-0">D</span>
+              <div>
+                <div class="font-bold text-sm text-red-600 dark:text-gh-red">Deleted (Merah)</div>
+                <p class="text-xs text-slate-600 dark:text-gh-muted mt-0.5">File yang tercatat di Git tapi <strong>baru saja kamu hapus</strong> dari folder proyek.</p>
+              </div>
+            </div>
+            <!-- C -->
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border flex items-start gap-3 sm:col-span-2 lg:col-span-2">
+              <span class="px-2 py-0.5 rounded font-mono font-bold text-xs bg-red-500/20 text-red-600 dark:text-gh-red shrink-0">C</span>
+              <div>
+                <div class="font-bold text-sm text-red-600 dark:text-gh-red">Conflict (Merah)</div>
+                <p class="text-xs text-slate-600 dark:text-gh-muted mt-0.5">Ada <strong>bentrokan kode</strong> di baris yang sama saat menggabungkan branch atau melakukan pull. Harus dipilih dulu mana kode yang mau dipakai.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shortcut & Panel Source Control VS Code -->
+          <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <h4 class="font-bold text-sm text-blue-700 dark:text-gh-blue">⚡ Shortcut Wajib di VS Code</h4>
+              <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                • Buka/Tutup Terminal VS Code: tekan <kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-gh-bg border border-slate-300 dark:border-gh-border font-mono text-[11px]">Ctrl + ~</kbd> (Windows) atau <kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-gh-bg border border-slate-300 dark:border-gh-border font-mono text-[11px]">Cmd + J</kbd> (Mac).<br>
+                • Buka Panel Git (Source Control): klik ikon <strong>cabang bercabang 3</strong> di sidebar kiri paling luar atau tekan <kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-gh-bg border border-slate-300 dark:border-gh-border font-mono text-[11px]">Ctrl + Shift + G</kbd>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           BAB 2: STEP-BY-STEP UPLOAD PROYEK BARU DARI NOL (VIA VS CODE)
+           ===================================================================== -->
+      <section id="bab-2" class="scroll-mt-20 space-y-8">
+        <div class="border-b border-slate-200 dark:border-gh-border pb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-gh-green">Bab 02 • Praktik Pertama</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Step-by-Step Upload Proyek Baru dari Nol</h2>
+          <p class="text-slate-600 dark:text-gh-muted text-sm sm:text-base mt-2">
+            Ikuti 8 langkah ini secara berurutan di Terminal VS Code untuk mengirim folder proyek pertamamu ke GitHub. Centang kotak di sebelah kiri setiap langkah yang sudah kamu jalankan!
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Step 1 -->
+          <label class="block cursor-pointer group">
+            <input type="checkbox" class="step-checkbox hidden" data-step="bab2-step1">
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border-2 border-slate-200 dark:border-gh-border transition">
+              <div class="flex items-start gap-3.5">
+                <div class="w-6 h-6 mt-0.5 rounded-lg border-2 border-slate-300 dark:border-gh-border flex items-center justify-center shrink-0 group-hover:border-emerald-500 transition check-box-visual">
+                  <svg class="w-4 h-4 text-emerald-500 hidden check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0 space-y-3">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="font-bold text-base">Langkah 1: Kenalkan Identitas Git Kamu (Cukup 1x Seumur Hidup di Laptop Ini)</h3>
+                    <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-gh-bg text-slate-500 dark:text-gh-muted">Wajib Pemula</span>
+                  </div>
+                  <p class="text-sm text-slate-600 dark:text-gh-muted">
+                    Buka folder proyekmu di VS Code, buka Terminal (<code class="font-mono text-xs">Ctrl + ~</code> atau <code class="font-mono text-xs">Cmd + J</code>), lalu atur nama dan email yang sama dengan akun GitHub-mu:
+                  </p>
+                  <div class="cmd-box" data-cmd='git config --global user.name "UsernameGitHubKamu"&#10;git config --global user.email "emailkamu@gmail.com"'></div>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Step 2 -->
+          <label class="block cursor-pointer group">
+            <input type="checkbox" class="step-checkbox hidden" data-step="bab2-step2">
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border-2 border-slate-200 dark:border-gh-border transition">
+              <div class="flex items-start gap-3.5">
+                <div class="w-6 h-6 mt-0.5 rounded-lg border-2 border-slate-300 dark:border-gh-border flex items-center justify-center shrink-0 group-hover:border-emerald-500 transition check-box-visual">
+                  <svg class="w-4 h-4 text-emerald-500 hidden check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0 space-y-3">
+                  <h3 class="font-bold text-base">Langkah 2: Aktifkan "Mesin Waktu" Git di Folder Proyek</h3>
+                  <p class="text-sm text-slate-600 dark:text-gh-muted">
+                    Pastikan posisi terminal sudah berada di dalam folder proyekmu, lalu ketik perintah ini untuk membuat folder tersembunyi <code class="font-mono text-xs">.git</code>. File-file di Explorer VS Code akan langsung berubah hijau (<code class="font-mono text-xs">U</code>).
+                  </p>
+                  <div class="cmd-box" data-cmd="git init"></div>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Step 3 -->
+          <label class="block cursor-pointer group">
+            <input type="checkbox" class="step-checkbox hidden" data-step="bab2-step3">
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border-2 border-slate-200 dark:border-gh-border transition">
+              <div class="flex items-start gap-3.5">
+                <div class="w-6 h-6 mt-0.5 rounded-lg border-2 border-slate-300 dark:border-gh-border flex items-center justify-center shrink-0 group-hover:border-emerald-500 transition check-box-visual">
+                  <svg class="w-4 h-4 text-emerald-500 hidden check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0 space-y-3">
+                  <h3 class="font-bold text-base">Langkah 3: Buat File <code class="font-mono text-blue-500">.gitignore</code> (Opsional tapi Sangat Disarankan)</h3>
+                  <p class="text-sm text-slate-600 dark:text-gh-muted">
+                    Buat file baru bernama <code class="font-mono text-xs">.gitignore</code> di folder utama untuk mendaftar file rahasia atau folder berat agar <strong>tidak ikut terkirim</strong> ke GitHub. Contoh isinya:
+                  </p>
+                  <div class="p-3 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs leading-relaxed border border-slate-700">
+                    node_modules/<br>
+                    .env<br>
+                    .DS_Store
+                  </div>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Step 4 -->
+          <label class="block cursor-pointer group">
+            <input type="checkbox" class="step-checkbox hidden" data-step="bab2-step4">
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border-2 border-slate-200 dark:border-gh-border transition">
+              <div class="flex items-start gap-3.5">
+                <div class="w-6 h-6 mt-0.5 rounded-lg border-2 border-slate-300 dark:border-gh-border flex items-center justify-center shrink-0 group-hover:border-emerald-500 transition check-box-visual">
+                  <svg class="w-4 h-4 text-emerald-500 hidden check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0 space-y-3">
+                  <h3 class="font-bold text-base">Langkah 4: Masukkan Semua File ke "Keranjang Belanja" (Staging Area)</h3>
+                  <p class="text-sm text-slate-600 dark:text-gh-muted">
+                    Tanda titik (<code class="font-mono text-xs">.</code>) artinya memilih <strong>semua file</strong> di dalam folder proyek. (Alternatif UI VS Code: buka panel Source Control, arahkan kursor ke <em>Changes</em>, lalu klik ikon <strong>+</strong>).
+                  </p>
+                  <div class="cmd-box" data-cmd="git add ."></div>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Step 5 -->
+          <label class="block cursor-pointer group">
+            <input type="checkbox" class="step-checkbox hidden" data-step="bab2-step5">
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border-2 border-slate-200 dark:border-gh-border transition">
+              <div class="flex items-start gap-3.5">
+                <div class="w-6 h-6 mt-0.5 rounded-lg border-2 border-slate-300 dark:border-gh-border flex items-center justify-center shrink-0 group-hover:border-emerald-500 transition check-box-visual">
+                  <svg class="w-4 h-4 text-emerald-500 hidden check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0 space-y-3">
+                  <h3 class="font-bold text-base">Langkah 5: Simpan Snapshot Pertama (Commit)</h3>
+                  <p class="text-sm text-slate-600 dark:text-gh-muted">
+                    Beri label catatan pada paket file tadi supaya kamu ingat ini versi apa.
+                  </p>
+                  <div class="cmd-box" data-cmd='git commit -m "first commit"'></div>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Step 6 -->
+          <label class="block cursor-pointer group">
+            <input type="checkbox" class="step-checkbox hidden" data-step="bab2-step6">
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border-2 border-slate-200 dark:border-gh-border transition">
+              <div class="flex items-start gap-3.5">
+                <div class="w-6 h-6 mt-0.5 rounded-lg border-2 border-slate-300 dark:border-gh-border flex items-center justify-center shrink-0 group-hover:border-emerald-500 transition check-box-visual">
+                  <svg class="w-4 h-4 text-emerald-500 hidden check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0 space-y-3">
+                  <h3 class="font-bold text-base">Langkah 6: Pastikan Nama Cabang Utama adalah <code class="font-mono text-purple-400">main</code></h3>
+                  <p class="text-sm text-slate-600 dark:text-gh-muted">
+                    Standar cabang utama di GitHub sekarang bernama <code class="font-mono text-xs">main</code> (bukan <code class="font-mono text-xs">master</code>). Perintah ini memaksa mengubah nama cabang aktif menjadi <code class="font-mono text-xs">main</code>.
+                  </p>
+                  <div class="cmd-box" data-cmd="git branch -M main"></div>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Step 7 -->
+          <label class="block cursor-pointer group">
+            <input type="checkbox" class="step-checkbox hidden" data-step="bab2-step7">
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border-2 border-slate-200 dark:border-gh-border transition">
+              <div class="flex items-start gap-3.5">
+                <div class="w-6 h-6 mt-0.5 rounded-lg border-2 border-slate-300 dark:border-gh-border flex items-center justify-center shrink-0 group-hover:border-emerald-500 transition check-box-visual">
+                  <svg class="w-4 h-4 text-emerald-500 hidden check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0 space-y-3">
+                  <h3 class="font-bold text-base">Langkah 7: Sambungkan Folder Laptop ke Link Repositori GitHub</h3>
+                  <p class="text-sm text-slate-600 dark:text-gh-muted">
+                    Buat repositori baru di web GitHub (jangan centang README/gitignore dulu biar kosong), salin link HTTPS-nya, lalu tempel di sini:
+                  </p>
+                  <div class="cmd-box" data-cmd="git remote add origin https://github.com/username/nama-repo.git"></div>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Step 8 -->
+          <label class="block cursor-pointer group">
+            <input type="checkbox" class="step-checkbox hidden" data-step="bab2-step8">
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border-2 border-slate-200 dark:border-gh-border transition">
+              <div class="flex items-start gap-3.5">
+                <div class="w-6 h-6 mt-0.5 rounded-lg border-2 border-slate-300 dark:border-gh-border flex items-center justify-center shrink-0 group-hover:border-emerald-500 transition check-box-visual">
+                  <svg class="w-4 h-4 text-emerald-500 hidden check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0 space-y-3">
+                  <h3 class="font-bold text-base">Langkah 8: Terbangkan Kode ke GitHub (Push)!</h3>
+                  <p class="text-sm text-slate-600 dark:text-gh-muted">
+                    Kirim seluruh commit ke GitHub. Setelah selesai, buka browser dan <strong>Refresh</strong> halaman repositori GitHub-mu!
+                  </p>
+                  <div class="cmd-box" data-cmd="git push -u origin main"></div>
+                </div>
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Kotak Troubleshooting Error Pemula -->
+        <div class="p-6 rounded-2xl bg-red-500/5 border border-red-500/25 space-y-4">
+          <div class="flex items-center gap-2.5">
+            <span class="text-xl">🚑</span>
+            <h3 class="font-bold text-lg text-red-600 dark:text-gh-red">Kotak P3K: Solusi Error yang Sering Dialami Pemula</h3>
+          </div>
+          
+          <div class="grid sm:grid-cols-2 gap-3.5">
+            <div class="p-4 rounded-xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border">
+              <code class="text-xs font-mono font-bold text-red-500 block mb-1">fatal: not a git repository</code>
+              <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                <strong>Penyebab:</strong> Kamu lupa ketik <code class="font-mono text-emerald-500">git init</code> di awal, atau terminalmu salah folder.<br>
+                <strong>Solusi:</strong> Jalankan <code class="font-mono text-emerald-500">git init</code> dulu sebelum perintah Git lainnya.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border">
+              <code class="text-xs font-mono font-bold text-red-500 block mb-1">Author identity unknown</code>
+              <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                <strong>Penyebab:</strong> Git belum kenal siapa pembuat commit-nya.<br>
+                <strong>Solusi:</strong> Jalankan ulang Langkah 1 (<code class="font-mono text-emerald-500">git config --global user.name</code> & <code class="font-mono text-emerald-500">user.email</code>).
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border">
+              <code class="text-xs font-mono font-bold text-red-500 block mb-1">error: remote origin already exists</code>
+              <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                <strong>Penyebab:</strong> Link <code class="font-mono">origin</code> sudah pernah dimasukkan sebelumnya.<br>
+                <strong>Solusi:</strong> Hapus link lama dengan <code class="font-mono text-emerald-500">git remote remove origin</code> lalu masukkan ulang link yang benar.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border">
+              <code class="text-xs font-mono font-bold text-amber-500 block mb-1">Diminta Password / Authentication Failed</code>
+              <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                <strong>Penyebab:</strong> GitHub tidak lagi menerima password akun biasa di terminal.<br>
+                <strong>Solusi:</strong> Login lewat jendela pop-up browser VS Code, atau buat <strong>Personal Access Token (PAT)</strong> di GitHub (Settings → Developer settings → Tokens classic) lalu tempel token itu sebagai pengganti password.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           BAB 3: RUTINITAS HARIAN — UPDATE KODE, PULL, CLONE & UNDO DI VS CODE
+           ===================================================================== -->
+      <section id="bab-3" class="scroll-mt-20 space-y-8">
+        <div class="border-b border-slate-200 dark:border-gh-border pb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-gh-amber">Bab 03 • Alur Kerja Harian</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Update Kode, Pull, Clone & Undo di VS Code</h2>
+          <p class="text-slate-600 dark:text-gh-muted text-sm sm:text-base mt-2">
+            Setelah proyek berhasil di-upload pertama kali, sehari-hari kamu cuma bakal muter di 4 skenario ini!
+          </p>
+        </div>
+
+        <!-- Skenario 1: Update & Push -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-500 text-sm flex items-center justify-center font-bold">1</span>
+              <span>Skenario 1: Update & Push Perubahan Baru</span>
+            </h3>
+            <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-gh-green">Paling Sering Dipakai</span>
+          </div>
+          <p class="text-sm text-slate-600 dark:text-gh-muted">
+            Misalnya kamu baru saja mengedit <code class="font-mono text-xs">index.html</code> atau menambah file CSS baru. Kamu bisa mengunggahnya lewat <strong>Cara Terminal</strong> atau <strong>Cara Klik Tombol UI VS Code</strong>:
+          </p>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <!-- Cara Terminal -->
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-3">
+              <div class="font-bold text-sm text-blue-600 dark:text-gh-blue">⌨️ Cara A: Lewat Terminal (3 Perintah Sakti)</div>
+              <p class="text-xs text-slate-600 dark:text-gh-muted">Tidak perlu <code class="font-mono">git init</code> atau <code class="font-mono">remote add</code> lagi! Cukup jalankan:</p>
+              <div class="cmd-box" data-cmd='git status&#10;git add .&#10;git commit -m "update tampilan navbar"&#10;git push'></div>
+            </div>
+
+            <!-- Cara UI VS Code -->
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-2.5">
+              <div class="font-bold text-sm text-purple-600 dark:text-gh-purple">🖱️ Cara B: Klik Tombol di UI VS Code (Tanpa Ketik)</div>
+              <ol class="text-xs text-slate-600 dark:text-gh-muted space-y-2 list-decimal list-inside leading-relaxed">
+                <li>Klik ikon <strong>Source Control</strong> (ikon cabang di sidebar kiri VS Code, ada angka biru jumlah file berubah).</li>
+                <li>Arahkan kursor ke tulisan <strong>Changes</strong>, lalu klik ikon <strong>+ (Stage All Changes)</strong>.</li>
+                <li>Ketik pesan perubahan di kotak <em>Message</em> (misal: <code class="font-mono">fix warna tombol</code>).</li>
+                <li>Klik tombol biru <strong>Commit</strong>.</li>
+                <li>Tombol biru berubah jadi <strong>Sync Changes</strong> → klik tombol itu untuk langsung <code class="font-mono">push</code> ke GitHub!</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skenario 2: Pull vs Fetch -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
+          <h3 class="text-lg font-bold flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-500 text-sm flex items-center justify-center font-bold">2</span>
+            <span>Skenario 2: Mengambil Update Terbaru dari GitHub (<code class="font-mono text-blue-500">pull</code> vs <code class="font-mono text-purple-500">fetch</code>)</span>
+          </h3>
+          <p class="text-sm text-slate-600 dark:text-gh-muted">
+            Kalau teman satu tim baru upload kode baru ke GitHub (atau kamu edit file langsung di web GitHub), kamu harus menyedot perubahan itu ke laptopmu sebelum mulai ngoding lagi.
+          </p>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 space-y-2">
+              <div class="font-bold text-sm text-blue-600 dark:text-gh-blue">⬇️ git pull (Langsung Sedot & Gabung)</div>
+              <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                Mengunduh perubahan terbaru dari GitHub <strong>sekaligus langsung menggabungkannya</strong> ke file di VS Code kamu. Paling sering dipakai sebelum mulai kerja.
+              </p>
+              <div class="cmd-box" data-cmd="git pull origin main"></div>
+            </div>
+            <div class="p-4 rounded-xl bg-purple-500/5 border border-purple-500/20 space-y-2">
+              <div class="font-bold text-sm text-purple-600 dark:text-gh-purple">👀 git fetch (Intip Dulu Tanpa Mengubah File)</div>
+              <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                Hanya mengecek dan mengunduh info update dari GitHub ke memori Git tanpa menyentuh file yang sedang kamu edit. Aman kalau kamu mau cek ada update apa saja dulu.
+              </p>
+              <div class="cmd-box" data-cmd="git fetch origin"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skenario 3 & 4 -->
+        <div class="grid md:grid-cols-2 gap-4">
+          <!-- Skenario 3: Clone -->
+          <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-3">
+            <h3 class="text-base font-bold flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-cyan-500/15 text-cyan-500 text-xs flex items-center justify-center font-bold">3</span>
+              <span>Skenario 3: Unduh Proyek ke Laptop Baru (Clone)</span>
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+              Ganti laptop atau mau unduh repo GitHub ke folder lokal? Jangan download ZIP! Pakai <code class="font-mono">git clone</code> supaya riwayat Git dan link <code class="font-mono">origin</code> otomatis terhubung.
+            </p>
+            <div class="cmd-box" data-cmd="git clone https://github.com/username/nama-repo.git"></div>
+            <p class="text-[11px] text-slate-500 dark:text-gh-muted">
+              💡 <strong>Tips VS Code:</strong> Buka jendela baru VS Code → klik tulisan biru <em>Clone Git Repository...</em> di layar Welcome → tempel URL GitHub.
+            </p>
+          </div>
+
+          <!-- Skenario 4: Mesin Waktu / Undo -->
+          <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-3">
+            <h3 class="text-base font-bold flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-red-500/15 text-red-500 text-xs flex items-center justify-center font-bold">4</span>
+              <span>Skenario 4: "Mesin Waktu" / Batalkan Kesalahan</span>
+            </h3>
+            <div class="space-y-2.5 text-xs text-slate-600 dark:text-gh-muted">
+              <div>
+                <strong class="text-slate-800 dark:text-gh-text">• Batalkan editan file sebelum di-commit:</strong>
+                <div class="cmd-box mt-1" data-cmd="git checkout -- index.html"></div>
+                <span class="text-[11px] block mt-1">(Atau di panel Source Control VS Code, klik ikon <strong>panah melengkung balik / Discard Changes</strong> di sebelah nama file).</span>
+              </div>
+              <div>
+                <strong class="text-slate-800 dark:text-gh-text">• Typo pesan commit terakhir (sebelum push):</strong>
+                <div class="cmd-box mt-1" data-cmd='git commit --amend -m "pesan commit yang benar"'></div>
+              </div>
+              <div>
+                <strong class="text-slate-800 dark:text-gh-text">• Lihat riwayat simpanan (commit) ringkas:</strong>
+                <div class="cmd-box mt-1" data-cmd="git log --oneline"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           BAB 4: KUPAS TUNTAS MATERI BRANCH (CABANG KERJA)
+           ===================================================================== -->
+      <section id="bab-4" class="scroll-mt-20 space-y-8">
+        <div class="border-b border-slate-200 dark:border-gh-border pb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-purple-600 dark:text-gh-purple">Bab 04 • Fitur Super Git</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Kupas Tuntas Materi Branch (Cabang Kerja)</h2>
+          <p class="text-slate-600 dark:text-gh-muted text-sm sm:text-base mt-2">
+            Bayangkan kamu punya website yang sudah jalan bagus di cabang <code class="font-mono text-blue-500">main</code>. Lalu kamu mau bikin fitur baru yang berisiko bikin error. Nah, di sinilah <strong>Branch</strong> menyelamatkan hidupmu!
+          </p>
+        </div>
+
+        <!-- Analogi Branch -->
+        <div class="p-5 rounded-2xl bg-purple-500/10 border border-purple-500/25 flex items-start gap-4">
+          <span class="text-3xl shrink-0">🌿</span>
+          <div class="space-y-1">
+            <h3 class="font-bold text-base text-purple-700 dark:text-gh-purple">Analogi "Dunia Paralel" (Salinan Draf Aman)</h3>
+            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              <strong>Branch</strong> adalah salinan jalur kerja paralel dari kodemu. Saat kamu bikin branch baru bernama <code class="font-mono text-xs px-1.5 py-0.5 rounded bg-purple-500/20">fitur-login</code>, kamu bebas mengacak-acak kode di cabang itu. Cabang utama (<code class="font-mono text-xs px-1.5 py-0.5 rounded bg-blue-500/20">main</code>) <strong>tetap bersih dan aman</strong>. Kalau fitur barunya sudah jadi dan sukses, tinggal digabungkan (<strong>Merge</strong>) ke <code class="font-mono text-xs">main</code>!
+            </p>
+          </div>
+        </div>
+
+        <!-- INTERACTIVE VISUAL BRANCH SIMULATOR -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border-2 border-purple-500/30 shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span class="text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-600 dark:text-gh-purple">Simulator Interaktif</span>
+              <h3 class="text-lg font-bold mt-1">Visualisasi Pohon Commit & Posisi HEAD</h3>
+            </div>
+            <button onclick="simReset()" class="self-start sm:self-auto px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-gh-bg hover:bg-slate-200 dark:hover:bg-gh-surfaceHover border border-slate-300 dark:border-gh-border transition">
+              🔄 Reset Simulasi
+            </button>
+          </div>
+
+          <!-- Canvas SVG Visual Diagram -->
+          <div class="w-full overflow-x-auto rounded-xl bg-slate-900 border border-slate-700 p-4">
+            <svg id="branch-svg" viewBox="0 0 680 210" class="w-full min-w-[540px] h-auto select-none">
+              <!-- Grid Guide Lines -->
+              <line x1="30" y1="65" x2="650" y2="65" stroke="#1e293b" stroke-width="1" stroke-dasharray="4 4" />
+              <line x1="30" y1="145" x2="650" y2="145" stroke="#1e293b" stroke-width="1" stroke-dasharray="4 4" />
+              
+              <!-- Track Labels -->
+              <text x="16" y="69" fill="#58a6ff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="bold">main</text>
+              <text id="feature-track-label" x="16" y="149" fill="#bc8cff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="bold" opacity="0.25">fitur</text>
+
+              <!-- Connections (Lines) -->
+              <!-- C1 -> C2 -->
+              <line x1="110" y1="65" x2="210" y2="65" stroke="#58a6ff" stroke-width="3" />
+              <!-- C2 -> C3 (Curve to feature branch) -->
+              <path id="line-c2-c3" d="M 210 65 C 250 65, 260 145, 310 145" fill="none" stroke="#bc8cff" stroke-width="3" opacity="0" class="branch-line" />
+              <!-- C3 -> C4 -->
+              <line id="line-c3-c4" x1="310" y1="145" x2="420" y2="145" stroke="#bc8cff" stroke-width="3" opacity="0" class="branch-line" />
+              <!-- C2 -> M1 (Main continuation) -->
+              <line id="line-c2-m1" x1="210" y1="65" x2="530" y2="65" stroke="#58a6ff" stroke-width="3" opacity="0" class="branch-line" />
+              <!-- C4 -> M1 (Merge curve) -->
+              <path id="line-c4-m1" d="M 420 145 C 470 145, 480 65, 530 65" fill="none" stroke="#3fb950" stroke-width="3" stroke-dasharray="5 3" opacity="0" class="branch-line" />
+
+              <!-- Commit Nodes -->
+              <!-- C1 -->
+              <g class="branch-node" transform="translate(110, 65)">
+                <circle r="18" fill="#1e3a8a" stroke="#58a6ff" stroke-width="3" />
+                <text y="4" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="bold">C1</text>
+                <text y="-25" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="10">init</text>
+              </g>
+
+              <!-- C2 -->
+              <g class="branch-node" transform="translate(210, 65)">
+                <circle r="18" fill="#1e3a8a" stroke="#58a6ff" stroke-width="3" />
+                <text y="4" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="bold">C2</text>
+                <text y="-25" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="10">home</text>
+              </g>
+
+              <!-- C3 (Feature commit 1) -->
+              <g id="node-c3" class="branch-node" transform="translate(310, 145)" opacity="0">
+                <circle r="18" fill="#4c1d95" stroke="#bc8cff" stroke-width="3" />
+                <text y="4" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="bold">C3</text>
+                <text y="32" text-anchor="middle" fill="#c4b5fd" font-family="Inter, sans-serif" font-size="10">form login</text>
+              </g>
+
+              <!-- C4 (Feature commit 2) -->
+              <g id="node-c4" class="branch-node" transform="translate(420, 145)" opacity="0">
+                <circle r="18" fill="#4c1d95" stroke="#bc8cff" stroke-width="3" />
+                <text y="4" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="bold">C4</text>
+                <text y="32" text-anchor="middle" fill="#c4b5fd" font-family="Inter, sans-serif" font-size="10">validasi</text>
+              </g>
+
+              <!-- M1 (Merge commit) -->
+              <g id="node-m1" class="branch-node" transform="translate(530, 65)" opacity="0">
+                <circle r="19" fill="#065f46" stroke="#3fb950" stroke-width="3" />
+                <text y="4" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="bold">M1</text>
+                <text y="-26" text-anchor="middle" fill="#6ee7b7" font-family="Inter, sans-serif" font-size="10">merge!</text>
+              </g>
+
+              <!-- Dynamic Branch Badges -->
+              <!-- main badge -->
+              <g id="badge-main" class="branch-node" transform="translate(210, 22)">
+                <rect x="-24" y="-11" width="48" height="20" rx="6" fill="#2563eb" />
+                <text y="3" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="10" font-weight="bold">main</text>
+              </g>
+
+              <!-- fitur badge -->
+              <g id="badge-fitur" class="branch-node" transform="translate(210, 102)" opacity="0">
+                <rect x="-26" y="-11" width="52" height="20" rx="6" fill="#7c3aed" />
+                <text y="3" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="10" font-weight="bold">fitur</text>
+              </g>
+
+              <!-- HEAD Pointer Badge (Menunjukkan posisi user berada sekarang) -->
+              <g id="badge-head" class="branch-node" transform="translate(210, 105)">
+                <rect x="-32" y="-10" width="64" height="20" rx="6" fill="#f59e0b" />
+                <text y="4" text-anchor="middle" fill="#0f172a" font-family="JetBrains Mono, monospace" font-size="10" font-weight="extrabold">📍 HEAD</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Tombol Kontrol Simulasi -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button id="btn-sim-1" onclick="simCreateBranch()" class="p-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs shadow transition text-center">
+              1. Buat Branch Fitur
+            </button>
+            <button id="btn-sim-2" onclick="simAddCommit()" class="p-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow transition text-center">
+              2. Commit di Fitur
+            </button>
+            <button id="btn-sim-3" onclick="simSwitchMain()" class="p-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow transition text-center">
+              3. Pindah ke Main
+            </button>
+            <button id="btn-sim-4" onclick="simMerge()" class="p-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow transition text-center">
+              4. Merge ke Main
+            </button>
+          </div>
+
+          <!-- Narasi & Perintah Terminal Hasil Simulasi -->
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-600 dark:text-gh-amber">Status Saat Ini:</span>
+              <code id="sim-cmd" class="text-xs font-mono px-2.5 py-1 rounded bg-slate-900 text-emerald-400">git status (On branch main)</code>
+            </div>
+            <p id="sim-desc" class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              Kamu sedang berada di cabang <strong>main</strong> (ditandai lencana kuning <strong>HEAD</strong> di commit <code>C2</code>). Klik tombol <strong>"1. Buat Branch Fitur"</strong> untuk mulai bercabang!
+            </p>
+          </div>
+        </div>
+
+        <!-- Panduan Praktik Branch Step-by-Step di VS Code -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-bold">🛠️ 7 Langkah Praktik Branch di VS Code</h3>
+          
+          <div class="space-y-3">
+            <!-- B1 -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2">
+              <h4 class="font-bold text-sm">1. Cek Daftar Branch yang Ada</h4>
+              <p class="text-xs text-slate-600 dark:text-gh-muted">Tanda bintang (<code class="font-mono text-emerald-500">*</code>) menandakan posisi cabang aktifmu saat ini. Di VS Code, nama branch aktif juga selalu tampil di <strong>pojok kiri paling bawah</strong>!</p>
+              <div class="cmd-box" data-cmd="git branch"></div>
+            </div>
+
+            <!-- B2 -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2">
+              <h4 class="font-bold text-sm">2. Buat Branch Baru Sekaligus Langsung Pindah ke Sana</h4>
+              <p class="text-xs text-slate-600 dark:text-gh-muted">Gunakan perintah modern <code class="font-mono text-purple-400">git switch -c</code> (atau cara klasik <code class="font-mono">git checkout -b</code>):</p>
+              <div class="cmd-box" data-cmd="git switch -c fitur-login"></div>
+            </div>
+
+            <!-- B3 -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2">
+              <h4 class="font-bold text-sm">3. Ngoding, Commit, dan Push Branch Baru ke GitHub</h4>
+              <p class="text-xs text-slate-600 dark:text-gh-muted">Edit filemu seperti biasa, lalu simpan dan kirim cabang baru tersebut ke GitHub:</p>
+              <div class="cmd-box" data-cmd='git add .&#10;git commit -m "selesai buat fitur login"&#10;git push -u origin fitur-login'></div>
+            </div>
+
+            <!-- B4 -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2">
+              <h4 class="font-bold text-sm">4. Pindah Kembali ke Branch Utama (<code class="font-mono text-blue-500">main</code>)</h4>
+              <p class="text-xs text-slate-600 dark:text-gh-muted">Atau cukup klik nama branch di pojok kiri bawah VS Code lalu pilih <code class="font-mono">main</code> dari menu dropdown di atas.</p>
+              <div class="cmd-box" data-cmd="git switch main"></div>
+            </div>
+
+            <!-- B5 -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2">
+              <h4 class="font-bold text-sm">5. Gabungkan (Merge) Hasil Kerja Fitur ke <code class="font-mono text-blue-500">main</code></h4>
+              <p class="text-xs text-slate-600 dark:text-gh-muted">Pastikan kamu sudah berada di branch <code class="font-mono">main</code>, lalu tarik isi <code class="font-mono">fitur-login</code> ke dalam <code class="font-mono">main</code> dan push ke GitHub:</p>
+              <div class="cmd-box" data-cmd="git merge fitur-login&#10;git push"></div>
+            </div>
+
+            <!-- B6 -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2">
+              <h4 class="font-bold text-sm">6. Hapus Branch Lama yang Sudah Selesai Dipakai</h4>
+              <p class="text-xs text-slate-600 dark:text-gh-muted">Setelah berhasil di-merge, cabang fitur boleh dihapus biar rapi:</p>
+              <div class="cmd-box" data-cmd="git branch -d fitur-login"></div>
+            </div>
+
+            <!-- B7: Merge Conflict -->
+            <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+              <h4 class="font-bold text-sm text-amber-700 dark:text-gh-amber">7. Gimana Kalau Terjadi Merge Conflict di VS Code? (Jangan Panik!)</h4>
+              <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                Conflict terjadi kalau dua cabang mengedit <strong>baris kode yang persis sama</strong>. VS Code akan otomatis memunculkan 4 tombol ajaib di atas baris yang bentrok:
+              </p>
+              <ul class="text-xs text-slate-700 dark:text-slate-300 space-y-1 pl-4 list-disc">
+                <li><strong>Accept Current Change</strong> → Pakai kode milikmu yang sekarang (<code class="font-mono">HEAD</code>).</li>
+                <li><strong>Accept Incoming Change</strong> → Pakai kode baru yang masuk dari cabang lawan.</li>
+                <li><strong>Accept Both Changes</strong> → Simpan kedua-duanya (atas dan bawah).</li>
+              </ul>
+              <p class="text-xs text-slate-600 dark:text-gh-muted pt-1">
+                Setelah klik salah satu tombol di atas, tinggal <code class="font-mono">git add .</code> → <code class="font-mono">git commit -m "resolve conflict"</code> → <code class="font-mono">git push</code>!
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           BAB 5: KAMUS LENGKAP FLAG & PARAMETER GIT (-u, -m, -M, DLL)
+           ===================================================================== -->
+      <section id="bab-5" class="scroll-mt-20 space-y-6">
+        <div class="border-b border-slate-200 dark:border-gh-border pb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-pink-600 dark:text-pink-400">Bab 05 • Kamus Kode Rahasia</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Kamus Lengkap Flag & Parameter Git (<code class="font-mono text-pink-500">-u</code>, <code class="font-mono text-pink-500">-m</code>, <code class="font-mono text-pink-500">-M</code>, dll.)</h2>
+          <p class="text-slate-600 dark:text-gh-muted text-sm sm:text-base mt-2">
+            Huruf-huruf dengan tanda strip seperti <code class="font-mono text-xs">-u</code> atau <code class="font-mono text-xs">-M</code> disebut <strong>Flag / Option</strong>. Fungsinya memberi instruksi tambahan pada perintah Git. Cari flag yang bikin kamu penasaran di bawah ini!
+          </p>
+        </div>
+
+        <!-- Search & Category Filter Controls -->
+        <div class="space-y-3">
+          <div class="relative">
+            <input type="text" id="flag-search" placeholder="Ketik flag atau fungsi (misal: -u, -M, upstream, paksa, oneline)..." class="w-full pl-10 pr-4 py-3 text-sm rounded-2xl bg-white dark:bg-gh-surface border border-slate-300 dark:border-gh-border focus:outline-none focus:border-pink-500 shadow-xs" />
+            <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </div>
+
+          <div id="flag-filters" class="flex flex-wrap gap-2">
+            <button data-cat="all" class="flag-cat-btn active px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pink-600 text-white transition">Semua Flag</button>
+            <button data-cat="commit" class="flag-cat-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-200 dark:bg-gh-surface text-slate-700 dark:text-gh-muted hover:bg-slate-300 dark:hover:bg-gh-surfaceHover transition">Commit & Add</button>
+            <button data-cat="branch" class="flag-cat-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-200 dark:bg-gh-surface text-slate-700 dark:text-gh-muted hover:bg-slate-300 dark:hover:bg-gh-surfaceHover transition">Branch</button>
+            <button data-cat="push" class="flag-cat-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-200 dark:bg-gh-surface text-slate-700 dark:text-gh-muted hover:bg-slate-300 dark:hover:bg-gh-surfaceHover transition">Push & Remote</button>
+            <button data-cat="config" class="flag-cat-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-200 dark:bg-gh-surface text-slate-700 dark:text-gh-muted hover:bg-slate-300 dark:hover:bg-gh-surfaceHover transition">Log & Config</button>
+          </div>
+        </div>
+
+        <!-- Flags List Container -->
+        <div id="flags-container" class="space-y-4">
+          <!-- Dirender dinamis oleh JavaScript -->
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           BAB 6: STEP-BY-STEP PUBLISH & DEPLOY WEBSITE GRATIS
+           ===================================================================== -->
+      <section id="bab-6" class="scroll-mt-20 space-y-8">
+        <div class="border-b border-slate-200 dark:border-gh-border pb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">Bab 06 • Onlinekan Karyamu</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Step-by-Step Publish & Deploy Website Gratis</h2>
+          <p class="text-slate-600 dark:text-gh-muted text-sm sm:text-base mt-2">
+            Kodenya sudah rapi di GitHub? Saatnya bikin website-mu punya link publik yang bisa dibuka lewat HP siapa saja secara gratis!
+          </p>
+        </div>
+
+        <!-- Perbandingan GitHub Pages vs Vercel -->
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-base">🐙 Kapan Pilih GitHub Pages?</h3>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-500/15 text-blue-500">Web Statis</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+              Cocok kalau proyekmu berisi <strong>HTML, CSS, dan JavaScript murni</strong> (tanpa proses build Node.js). Langsung aktif dari dalam pengaturan repositori GitHub tanpa perlu daftar akun lain. Link berbentuk: <code class="font-mono text-blue-400">username.github.io/nama-repo</code>.
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-base">▲ Kapan Pilih Vercel?</h3>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-500">Super Cepat & Modern</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+              Cocok untuk <strong>HTML statis maupun framework modern</strong> (React, Next.js, Vite, Vue, Tailwind CLI). Punya fitur <em>Preview Link</em> otomatis setiap kali kamu push branch baru! Link berbentuk: <code class="font-mono text-emerald-400">nama-proyek.vercel.app</code>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Panduan A: GitHub Pages -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
+          <h3 class="text-lg font-bold flex items-center gap-2">
+            <span>🚀 Panduan A: Deploy ke GitHub Pages</span>
+          </h3>
+          <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-800 dark:text-amber-300">
+            <strong>Syarat Wajib:</strong> Di folder utama (<em>root</em>) repositori GitHub-mu harus ada file bernama <code class="font-mono font-bold">index.html</code> (huruf kecil semua).
+          </div>
+
+          <div class="space-y-2.5">
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-gh1">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>1.</strong> Buka halaman repositori GitHub-mu di browser, lalu klik tab <strong>Settings</strong> (ikon roda gigi di menu atas).</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-gh2">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>2.</strong> Di menu samping kiri, scroll ke bawah dan klik menu <strong>Pages</strong>.</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-gh3">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>3.</strong> Pada bagian <em>Build and deployment</em> → <em>Source</em>, pastikan terpilih <strong>Deploy from a branch</strong>.</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-gh4">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>4.</strong> Pada bagian <em>Branch</em>, ganti dropdown dari <code class="font-mono">None</code> menjadi <strong>main</strong>, biarkan folder tetap <strong>/ (root)</strong>, lalu klik tombol <strong>Save</strong>.</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-gh5">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>5.</strong> Tunggu 1–2 menit lalu refresh halaman tersebut. Akan muncul kotak bertuliskan <em>"Your site is live at https://..."</em>. Setiap kali kamu <code class="font-mono">git push</code> dari VS Code, web otomatis ter-update!</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Panduan B: Vercel -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
+          <h3 class="text-lg font-bold flex items-center gap-2">
+            <span>⚡ Panduan B: Deploy ke Vercel (Auto-Deploy dari VS Code)</span>
+          </h3>
+
+          <div class="space-y-2.5">
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-vc1">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>1.</strong> Buka <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline font-semibold">vercel.com</a>, klik <strong>Sign Up / Login</strong>, lalu pilih <strong>Continue with GitHub</strong>.</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-vc2">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>2.</strong> Di Dashboard Vercel, klik tombol <strong>Add New...</strong> → pilih <strong>Project</strong>.</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-vc3">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>3.</strong> Cari nama repositori GitHub-mu di daftar <em>Import Git Repository</em>, lalu klik tombol <strong>Import</strong>.</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-vc4">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>4.</strong> Pengaturan <em>Framework Preset</em> otomatis dideteksi oleh Vercel (biarkan default). Langsung klik tombol hitam <strong>Deploy</strong>.</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border cursor-pointer">
+              <input type="checkbox" class="step-checkbox mt-1 accent-emerald-500" data-step="bab6-vc5">
+              <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-300"><strong>5.</strong> Tunggu sekitar 20–40 detik sampai muncul animasi konfeti 🎉 dan preview websitemu! Klik gambar preview untuk membuka link <code class="font-mono text-emerald-500">.vercel.app</code>. Mulai sekarang, setiap kamu <code class="font-mono">git push</code> dari VS Code, Vercel otomatis membangun ulang dan mengupdate websitemu!</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           BAB 7: MINI KUIS INTERAKTIF (UJI PEMAHAMAN)
+           ===================================================================== -->
+      <section id="bab-7" class="scroll-mt-20 space-y-6 pb-16">
+        <div class="border-b border-slate-200 dark:border-gh-border pb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Bab 07 • Evaluasi Santai</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Mini Kuis Pemahaman (5 Soal)</h2>
+          <p class="text-slate-600 dark:text-gh-muted text-sm sm:text-base mt-2">
+            Yuk tes ingatanmu! Pilih jawaban yang paling tepat dan langsung lihat pembahasannya.
+          </p>
+        </div>
+
+        <div id="quiz-container" class="space-y-5">
+          <!-- Dirender dinamis oleh JavaScript -->
+        </div>
+
+        <!-- Hasil Skor Kuis -->
+        <div id="quiz-result" class="p-6 rounded-2xl bg-gradient-to-r from-indigo-600/15 to-purple-600/15 border border-indigo-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="font-bold text-lg">Skor Kamu: <span id="quiz-score" class="text-indigo-500 font-mono">0 / 5</span></h3>
+            <p id="quiz-feedback" class="text-xs sm:text-sm text-slate-600 dark:text-gh-muted mt-0.5">Jawab semua 5 pertanyaan di atas untuk melihat evaluasi lengkap!</p>
+          </div>
+          <button onclick="resetQuiz()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow transition shrink-0">
+            Ulangi Kuis
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // =========================================================================
+    // 1. DATA KAMUS ISTILAH DASAR (BAB 1)
+    // =========================================================================
+    const basicTerms = [
+      {
+        term: "Repository (Repo)",
+        tag: "Folder Proyek",
+        analogy: "Seperti folder proyek utama atau album foto yang punya catatan sejarah lengkap dari hari pertama dibuat.",
+        detail: "Ada 2 jenis: Local Repo (di laptopmu) dan Remote Repo (di server GitHub)."
+      },
+      {
+        term: "Working Directory",
+        tag: "Meja Kerja",
+        analogy: "Meja kerja tempat kamu bebas menulis, mengedit, atau menghapus kode di VS Code.",
+        detail: "Perubahan di sini belum dicatat permanen oleh Git sebelum masuk Staging & Commit."
+      },
+      {
+        term: "Staging Area",
+        tag: "Keranjang Belanja",
+        analogy: "Keranjang belanja sebelum masuk kasir. Kamu memilih file mana saja yang siap difoto/disimpan.",
+        detail: "Diaktifkan dengan perintah git add . atau klik ikon + di panel Source Control VS Code."
+      },
+      {
+        term: "Commit",
+        tag: "Titik Simpan / Save Game",
+        analogy: "Seperti tombol 'Save Game' di game RPG lengkap dengan catatan progresnya.",
+        detail: "Menyimpan snapshot permanen ke riwayat Git lokal lewat git commit -m \"pesan\"."
+      },
+      {
+        term: "Push",
+        tag: "Upload ke Cloud",
+        analogy: "Mengirim paket hasil Save Game dari laptop ke gudang online GitHub.",
+        detail: "Dilakukan dengan perintah git push agar kode lokal tampil di internet."
+      },
+      {
+        term: "Pull",
+        tag: "Download & Gabung",
+        analogy: "Menyedot update terbaru dari GitHub lalu langsung menerapkannya ke file di laptopmu.",
+        detail: "Wajib dilakukan sebelum mulai ngoding kalau kerja tim atau habis edit di perangkat lain."
+      },
+      {
+        term: "Fetch",
+        tag: "Intip Update",
+        analogy: "Mengecek apakah ada paket baru di GitHub tanpa membongkar atau mengubah file kerjamu saat ini.",
+        detail: "Lebih aman dari pull jika kamu ingin melihat perubahan remote terlebih dahulu."
+      },
+      {
+        term: "Clone",
+        tag: "Gandakan Proyek",
+        analogy: "Menyalin seluruh proyek dari GitHub ke laptop baru lengkap dengan seluruh riwayat commit-nya.",
+        detail: "Menggunakan perintah git clone <URL>."
+      },
+      {
+        term: ".gitignore",
+        tag: "Daftar Hitam File",
+        analogy: "Satpam yang melarang file rahasia (.env) atau folder raksasa (node_modules) ikut naik ke GitHub.",
+        detail: "Berupa file teks biasa bernama .gitignore di folder utama proyek."
+      },
+      {
+        term: "README.md",
+        tag: "Brosur / Halaman Depan",
+        analogy: "Buku panduan yang otomatis tampil paling depan saat orang membuka repositori GitHub-mu.",
+        detail: "Ditulis menggunakan format Markdown (.md) untuk menjelaskan cara instalasi & fitur proyek."
+      }
+    ];
+
+    // =========================================================================
+    // 2. DATA KAMUS FLAG & PARAMETER GIT (BAB 5)
+    // =========================================================================
+    const gitFlags = [
+      {
+        flag: "-u",
+        fullName: "--set-upstream",
+        category: "push",
+        catLabel: "Push & Remote",
+        command: "git push -u origin main",
+        meaning: "Menghubungkan & mengingat pasangan cabang lokal dengan cabang remote di GitHub.",
+        explanation: "Saat pertama kali push branch baru, kita pakai -u agar Git mengingat bahwa branch lokal 'main' berpasangan dengan 'origin/main'. Keuntungannya: untuk push berikutnya kamu cukup ketik 'git push' saja tanpa embel-embel origin main!"
+      },
+      {
+        flag: "-m",
+        fullName: "--message (pada git commit)",
+        category: "commit",
+        catLabel: "Commit & Add",
+        command: 'git commit -m "menambahkan fitur dark mode"',
+        meaning: "Menambahkan pesan/catatan singkat langsung di perintah commit.",
+        explanation: "Tanpa flag -m, Git akan membuka editor teks terminal (seperti Vim) yang sering bikin pemula bingung cara keluarnya. Dengan -m, kamu langsung menulis pesan di dalam tanda kutip."
+      },
+      {
+        flag: "-M",
+        fullName: "--move --force (pada git branch)",
+        category: "branch",
+        catLabel: "Branch",
+        command: "git branch -M main",
+        meaning: "Mengganti nama branch saat ini secara paksa (huruf M besar = Move + Force).",
+        explanation: "Sering dipakai setelah 'git init' untuk memastikan cabang utama bernama 'main'. Bedanya dengan -m kecil: kalau sudah ada branch bernama 'main', -M besar akan tetap menimpanya tanpa error."
+      },
+      {
+        flag: "-b",
+        fullName: "--branch (pada git checkout)",
+        category: "branch",
+        catLabel: "Branch",
+        command: "git checkout -b fitur-keranjang",
+        meaning: "Membuat branch baru sekaligus langsung berpindah masuk ke branch tersebut.",
+        explanation: "Daripada mengetik 2 perintah terpisah (git branch fitur-keranjang lalu git checkout fitur-keranjang), flag -b menggabungkan keduanya menjadi satu langkah praktis."
+      },
+      {
+        flag: "-c",
+        fullName: "--create (pada git switch)",
+        category: "branch",
+        catLabel: "Branch",
+        command: "git switch -c fitur-pembayaran",
+        meaning: "Versi modern dan lebih jelas dari 'checkout -b' untuk membuat & pindah ke branch baru.",
+        explanation: "Git memperkenalkan perintah 'git switch' agar lebih ramah pemula. Huruf -c berasal dari kata 'create' (buat cabang baru)."
+      },
+      {
+        flag: "-d vs -D",
+        fullName: "--delete vs --delete --force",
+        category: "branch",
+        catLabel: "Branch",
+        command: "git branch -d fitur-lama",
+        meaning: "Menghapus branch lokal. (-d = hapus aman, -D = hapus paksa).",
+        explanation: "Gunakan -d kecil untuk menghapus branch yang perubahannya sudah aman di-merge ke main. Gunakan -D besar jika kamu ingin membuang paksa branch eksperimen yang gagal dan belum pernah di-merge."
+      },
+      {
+        flag: "-a / -am",
+        fullName: "--all / --all --message",
+        category: "commit",
+        catLabel: "Commit & Add",
+        command: 'git commit -am "perbaiki typo teks"',
+        meaning: "Menggabungkan proses 'git add' (untuk file yang sudah terlacak) dan 'git commit' sekaligus.",
+        explanation: "Catatan penting: -am hanya otomatis memasukkan file lama yang dimodifikasi (status M). Jika ada file baru (status U), kamu tetap wajib pakai 'git add .' terlebih dahulu. Sedangkan pada 'git branch -a', artinya tampilkan semua branch lokal maupun remote."
+      },
+      {
+        flag: "-f",
+        fullName: "--force",
+        category: "push",
+        catLabel: "Push & Remote",
+        command: "git push -f origin main",
+        meaning: "Memaksa menimpa riwayat kode di GitHub dengan kode lokalmu.",
+        explanation: "⚠️ Hati-hati! Flag -f akan menghapus riwayat commit di GitHub yang tidak ada di laptopmu. Jangan pernah pakai ini di branch tim tanpa koordinasi."
+      },
+      {
+        flag: "--global",
+        fullName: "Global Configuration",
+        category: "config",
+        catLabel: "Log & Config",
+        command: 'git config --global user.name "Budi"',
+        meaning: "Menerapkan pengaturan ke seluruh proyek Git di satu akun laptop/komputer.",
+        explanation: "Dengan --global, kamu tidak perlu mengatur ulang nama dan email setiap kali membuat folder proyek baru."
+      },
+      {
+        flag: "--oneline",
+        fullName: "One Line Log View",
+        category: "config",
+        catLabel: "Log & Config",
+        command: "git log --oneline",
+        meaning: "Menampilkan riwayat commit secara ringkas: 1 baris untuk setiap 1 commit.",
+        explanation: "Tanpa --oneline, perintah 'git log' menampilkan teks sangat panjang berisi nama, email, tanggal lengkap, dan hash 40 karakter."
+      },
+      {
+        flag: ". dan -A",
+        fullName: "Current Directory / --all",
+        category: "commit",
+        catLabel: "Commit & Add",
+        command: "git add .",
+        meaning: "Memilih seluruh file baru, file yang diedit, dan file yang dihapus ke Staging Area.",
+        explanation: "Tanda titik (.) berarti 'seluruh isi folder ini dan sub-foldernya'. Fungsinya sama persis dengan 'git add -A' di versi Git modern."
+      }
+    ];
+
+    // =========================================================================
+    // 3. DATA MINI KUIS INTERAKTIF (BAB 7)
+    // =========================================================================
+    const quizData = [
+      {
+        question: "1. Apa fungsi utama flag '-u' pada perintah 'git push -u origin main'?",
+        options: [
+          "Menghapus branch lama di GitHub secara otomatis",
+          "Menghubungkan & mengingat pasangan branch lokal dengan remote agar ke depannya cukup ketik 'git push'",
+          "Memaksa upload file yang ukurannya lebih dari 100MB"
+        ],
+        answer: 1,
+        explanation: "Tepat! '-u' (--set-upstream) menyimpan informasi pasangan cabang lokal dan remote, sehingga perintah berikutnya cukup 'git push' atau 'git pull'."
+      },
+      {
+        question: "2. Di Explorer VS Code, file index.html milikmu berwarna kuning dan memiliki huruf 'M' di sampingnya. Apa artinya?",
+        options: [
+          "Missing — file tersebut hilang dari laptop",
+          "Merged — file sudah digabungkan dengan branch lain",
+          "Modified — file lama yang sudah terlacak Git baru saja kamu edit isinya"
+        ],
+        answer: 2,
+        explanation: "Betul! Huruf 'M' berwarna kuning/amber berarti Modified (dimodifikasi sejak commit terakhir)."
+      },
+      {
+        question: "3. Apa perbedaan utama antara 'git pull' dan 'git fetch'?",
+        options: [
+          "git pull mengunduh update lalu langsung menggabungkannya ke file lokal, sedangkan git fetch hanya mengintip/mengunduh info update tanpa mengubah file kerjamu",
+          "git fetch dipakai untuk upload kode, sedangkan git pull untuk download kode",
+          "Tidak ada bedanya, keduanya persis sama"
+        ],
+        answer: 0,
+        explanation: "Mantap! 'git pull' = 'git fetch' + 'git merge'. Jadi fetch lebih aman kalau kamu mau cek update dulu tanpa menyentuh file yang sedang diedit."
+      },
+      {
+        question: "4. Kamu sedang di branch 'main' dan ingin membuat branch baru bernama 'fitur-dark' sekaligus langsung berpindah ke dalamnya. Perintah mana yang benar?",
+        options: [
+          "git switch -c fitur-dark",
+          "git commit -m fitur-dark",
+          "git branch -d fitur-dark"
+        ],
+        answer: 0,
+        explanation: "Benar! 'git switch -c nama-branch' (atau 'git checkout -b nama-branch') membuat branch baru dan langsung memindahkan HEAD ke sana."
+      },
+      {
+        question: "5. Apa syarat wajib agar website HTML statis bisa tampil sempurna saat di-deploy menggunakan GitHub Pages?",
+        options: [
+          "Harus membeli domain .com terlebih dahulu",
+          "Harus memiliki file bernama index.html di folder utama (root) repositori",
+          "Repositori wajib diatur menjadi Private"
+        ],
+        answer: 1,
+        explanation: "Sempurna! GitHub Pages mencari file 'index.html' di folder root sebagai halaman utama website."
+      }
+    ];
+
+    // =========================================================================
+    // 4. INISIALISASI & FUNGSI RENDER KOMPONEN
+    // =========================================================================
+
+    // Render Kamus Istilah (Bab 1)
+    function renderTerms(filter = "") {
+      const container = document.getElementById("terms-grid");
+      const query = filter.toLowerCase().trim();
+      const filtered = basicTerms.filter(item =>
+        item.term.toLowerCase().includes(query) ||
+        item.tag.toLowerCase().includes(query) ||
+        item.analogy.toLowerCase().includes(query) ||
+        item.detail.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-span-full p-6 text-center rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border text-sm text-slate-500">Istilah "${filter}" tidak ditemukan. Coba kata kunci lain!</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => `
+        <div class="p-4 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border hover:border-blue-500/50 transition space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <h4 class="font-bold text-sm text-slate-900 dark:text-white">${item.term}</h4>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-gh-blue shrink-0">${item.tag}</span>
+          </div>
+          <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+            <span class="font-semibold text-emerald-600 dark:text-gh-green">Analogi:</span> ${item.analogy}
+          </p>
+          <p class="text-[11px] text-slate-500 dark:text-gh-muted leading-relaxed">
+            ${item.detail}
+          </p>
+        </div>
+      `).join("");
+    }
+
+    // Render Kamus Flag (Bab 5)
+    let currentFlagCategory = "all";
+    function renderFlags() {
+      const container = document.getElementById("flags-container");
+      const query = document.getElementById("flag-search").value.toLowerCase().trim();
+
+      const filtered = gitFlags.filter(item => {
+        const matchCat = currentFlagCategory === "all" || item.category === currentFlagCategory;
+        const matchQuery =
+          item.flag.toLowerCase().includes(query) ||
+          item.fullName.toLowerCase().includes(query) ||
+          item.command.toLowerCase().includes(query) ||
+          item.meaning.toLowerCase().includes(query) ||
+          item.explanation.toLowerCase().includes(query);
+        return matchCat && matchQuery;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border text-sm text-slate-500">Flag yang kamu cari tidak ditemukan. Coba hapus kata kunci atau pilih kategori "Semua Flag".</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => `
+        <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border hover:border-pink-500/40 transition space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="px-3 py-1 rounded-xl bg-pink-500/15 text-pink-600 dark:text-pink-400 font-mono font-extrabold text-sm">${item.flag}</span>
+              <span class="font-mono text-xs text-slate-500 dark:text-gh-muted">(${item.fullName})</span>
+            </div>
+            <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-gh-bg text-slate-600 dark:text-gh-muted border border-slate-200 dark:border-gh-border">${item.catLabel}</span>
+          </div>
+          <p class="text-sm font-semibold text-slate-800 dark:text-gh-text">${item.meaning}</p>
+          <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">${item.explanation}</p>
+          <div class="pt-1">
+            ${createCmdHTML(item.command)}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // Helper untuk membuat Kotak Perintah Terminal + Tombol Salin
+    function createCmdHTML(cmdText) {
+      const escapedAttr = cmdText.replace(/"/g, '&quot;').replace(/\n/g, '&#10;');
+      return `
+        <div class="relative group rounded-xl bg-[#0b0f17] border border-slate-700/80 overflow-hidden">
+          <div class="flex items-center justify-between px-3.5 py-1.5 bg-slate-800/70 border-b border-slate-700/70">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+              <span class="text-[10px] font-mono text-slate-400 ml-1">terminal</span>
+            </div>
+            <button type="button" onclick="copyCommand(this, &quot;${escapedAttr}&quot;)" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/10 hover:bg-blue-600 text-slate-200 hover:text-white text-[11px] font-medium transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              <span>Salin</span>
+            </button>
+          </div>
+          <pre class="p-3.5 text-xs font-mono text-emerald-300 overflow-x-auto leading-relaxed"><code>${cmdText}</code></pre>
+        </div>
+      `;
+    }
+
+    // Inisialisasi semua .cmd-box statis di halaman
+    function initCommandBoxes() {
+      document.querySelectorAll(".cmd-box").forEach(box => {
+        const cmd = box.getAttribute("data-cmd");
+        box.innerHTML = createCmdHTML(cmd);
+      });
+    }
+
+    // Fungsi Salin Teks ke Clipboard (Kompatibel Iframe)
+    function copyCommand(btnElement, text) {
+      const decodedText = text.replace(/&#10;/g, '\n').replace(/&quot;/g, '"');
+      const tempTextArea = document.createElement("textarea");
+      tempTextArea.value = decodedText;
+      tempTextArea.style.position = "fixed";
+      tempTextArea.style.left = "-9999px";
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      try {
+        document.execCommand("copy");
+        showToast("Perintah tersalin! Tinggal paste di Terminal VS Code.");
+        const span = btnElement.querySelector("span");
+        if (span) {
+          const original = span.textContent;
+          span.textContent = "Tersalin!";
+          btnElement.classList.add("bg-emerald-600", "text-white");
+          setTimeout(() => {
+            span.textContent = original;
+            btnElement.classList.remove("bg-emerald-600", "text-white");
+          }, 1500);
+        }
+      } catch (err) {
+        showToast("Gagal menyalin otomatis, silakan blok & salin manual.");
+      }
+      document.body.removeChild(tempTextArea);
+    }
+
+    // Toast Notification Helper
+    let toastTimeout;
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toast-message");
+      toastMsg.textContent = msg;
+      toast.classList.remove("translate-y-20", "opacity-0");
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add("translate-y-20", "opacity-0");
+      }, 2600);
+    }
+
+    // =========================================================================
+    // 5. VISUAL BRANCH SIMULATOR LOGIC (BAB 4)
+    // =========================================================================
+    let simStage = 0; // 0: init, 1: branch created, 2: committed on feature, 3: switched to main, 4: merged
+
+    function updateSimulatorUI() {
+      const featureLabel = document.getElementById("feature-track-label");
+      const lineC2C3 = document.getElementById("line-c2-c3");
+      const lineC3C4 = document.getElementById("line-c3-c4");
+      const lineC2M1 = document.getElementById("line-c2-m1");
+      const lineC4M1 = document.getElementById("line-c4-m1");
+      const nodeC3 = document.getElementById("node-c3");
+      const nodeC4 = document.getElementById("node-c4");
+      const nodeM1 = document.getElementById("node-m1");
+      const badgeMain = document.getElementById("badge-main");
+      const badgeFitur = document.getElementById("badge-fitur");
+      const badgeHead = document.getElementById("badge-head");
+      const simCmd = document.getElementById("sim-cmd");
+      const simDesc = document.getElementById("sim-desc");
+
+      // Reset defaults
+      featureLabel.setAttribute("opacity", simStage >= 1 ? "1" : "0.25");
+      lineC2C3.setAttribute("opacity", simStage >= 2 ? "1" : "0");
+      lineC3C4.setAttribute("opacity", simStage >= 2 ? "1" : "0");
+      nodeC3.setAttribute("opacity", simStage >= 2 ? "1" : "0");
+      nodeC4.setAttribute("opacity", simStage >= 2 ? "1" : "0");
+      lineC2M1.setAttribute("opacity", simStage === 4 ? "1" : "0");
+      lineC4M1.setAttribute("opacity", simStage === 4 ? "1" : "0");
+      nodeM1.setAttribute("opacity", simStage === 4 ? "1" : "0");
+
+      if (simStage === 0) {
+        badgeMain.setAttribute("transform", "translate(210, 22)");
+        badgeFitur.setAttribute("opacity", "0");
+        badgeHead.setAttribute("transform", "translate(210, 105)");
+        simCmd.textContent = "git status (On branch main)";
+        simDesc.innerHTML = 'Kamu sedang berada di cabang <strong>main</strong> (ditandai lencana kuning <strong>HEAD</strong> di commit <code>C2</code>). Klik tombol <strong>"1. Buat Branch Fitur"</strong> untuk mulai bercabang!';
+      } else if (simStage === 1) {
+        badgeMain.setAttribute("transform", "translate(210, 22)");
+        badgeFitur.setAttribute("opacity", "1");
+        badgeFitur.setAttribute("transform", "translate(210, 105)");
+        badgeHead.setAttribute("transform", "translate(210, 132)");
+        simCmd.textContent = "git switch -c fitur";
+        simDesc.innerHTML = 'Cabang baru <strong>fitur</strong> berhasil dibuat di titik <code>C2</code> dan lencana <strong>HEAD</strong> langsung pindah ke cabang <strong>fitur</strong>! Sekarang klik <strong>"2. Commit di Fitur"</strong>.';
+      } else if (simStage === 2) {
+        badgeMain.setAttribute("transform", "translate(210, 22)");
+        badgeFitur.setAttribute("opacity", "1");
+        badgeFitur.setAttribute("transform", "translate(420, 105)");
+        badgeHead.setAttribute("transform", "translate(420, 78)");
+        simCmd.textContent = 'git commit -m "validasi"';
+        simDesc.innerHTML = 'Kamu menambahkan 2 commit baru (<code>C3</code> & <code>C4</code>) di jalur <strong>fitur</strong>. Perhatikan bahwa cabang <strong>main</strong> tetap aman dan bersih di <code>C2</code>! Sekarang coba klik <strong>"3. Pindah ke Main"</strong>.';
+      } else if (simStage === 3) {
+        badgeMain.setAttribute("transform", "translate(210, 22)");
+        badgeFitur.setAttribute("opacity", "1");
+        badgeFitur.setAttribute("transform", "translate(420, 105)");
+        badgeHead.setAttribute("transform", "translate(210, 105)");
+        simCmd.textContent = "git switch main";
+        simDesc.innerHTML = 'Lencana <strong>HEAD</strong> kembali ke <strong>main</strong> (<code>C2</code>). Di VS Code, file-filemu otomatis kembali ke kondisi sebelum fitur dibuat! Siap menggabungkan? Klik <strong>"4. Merge ke Main"</strong>.';
+      } else if (simStage === 4) {
+        badgeMain.setAttribute("transform", "translate(530, 22)");
+        badgeFitur.setAttribute("opacity", "1");
+        badgeFitur.setAttribute("transform", "translate(420, 105)");
+        badgeHead.setAttribute("transform", "translate(530, 105)");
+        simCmd.textContent = "git merge fitur";
+        simDesc.innerHTML = '🎉 Sukses! Commit merge <code>M1</code> menyatukan kode dari <strong>fitur</strong> ke dalam <strong>main</strong>. Sekarang cabang <strong>main</strong> sudah punya fitur login lengkap dan siap di-push ke GitHub!';
+      }
+    }
+
+    function simCreateBranch() {
+      simStage = 1;
+      updateSimulatorUI();
+    }
+    function simAddCommit() {
+      if (simStage < 1) {
+        showToast("Tip: Cabang 'fitur' otomatis dibuatkan dulu sebelum commit!");
+      }
+      simStage = 2;
+      updateSimulatorUI();
+    }
+    function simSwitchMain() {
+      if (simStage < 2) {
+        showToast("Tip: Kita simulasikan sudah ada commit di fitur dulu ya!");
+      }
+      simStage = 3;
+      updateSimulatorUI();
+    }
+    function simMerge() {
+      if (simStage < 3) {
+        showToast("Tip: Pindah ke main dulu, lalu lakukan merge fitur!");
+      }
+      simStage = 4;
+      updateSimulatorUI();
+    }
+    function simReset() {
+      simStage = 0;
+      updateSimulatorUI();
+      showToast("Simulator branch di-reset ke awal.");
+    }
+
+    // =========================================================================
+    // 6. MINI KUIS INTERAKTIF (BAB 7)
+    // =========================================================================
+    let userAnswers = {};
+
+    function renderQuiz() {
+      const container = document.getElementById("quiz-container");
+      container.innerHTML = quizData.map((q, qIdx) => {
+        const chosen = userAnswers[qIdx];
+        const isAnswered = chosen !== undefined;
+
+        return `
+          <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-3">
+            <h4 class="font-bold text-sm sm:text-base">${q.question}</h4>
+            <div class="space-y-2">
+              ${q.options.map((opt, oIdx) => {
+                let btnClass = "border-slate-200 dark:border-gh-border hover:border-indigo-500/50 bg-slate-50 dark:bg-gh-bg";
+                if (isAnswered) {
+                  if (oIdx === q.answer) {
+                    btnClass = "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold";
+                  } else if (oIdx === chosen && chosen !== q.answer) {
+                    btnClass = "border-red-500 bg-red-500/15 text-red-700 dark:text-red-300";
+                  } else {
+                    btnClass = "border-slate-200 dark:border-gh-border opacity-60";
+                  }
+                }
+                return `
+                  <button type="button" onclick="selectAnswer(${qIdx}, ${oIdx})" class="w-full text-left p-3 rounded-xl border text-xs sm:text-sm transition flex items-center gap-3 ${btnClass}">
+                    <span class="w-6 h-6 rounded-full border border-current flex items-center justify-center font-mono text-xs shrink-0">${String.fromCharCode(65 + oIdx)}</span>
+                    <span>${opt}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+            ${isAnswered ? `
+              <div class="p-3 rounded-xl text-xs leading-relaxed ${chosen === q.answer ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' : 'bg-amber-500/10 text-amber-800 dark:text-amber-300'}">
+                <strong>${chosen === q.answer ? '✅ Benar!' : '💡 Pembahasan:'}</strong> ${q.explanation}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join("");
+
+      updateQuizScore();
+    }
+
+    function selectAnswer(qIdx, oIdx) {
+      userAnswers[qIdx] = oIdx;
+      renderQuiz();
+    }
+
+    function updateQuizScore() {
+      let score = 0;
+      const total = quizData.length;
+      const answeredCount = Object.keys(userAnswers).length;
+
+      quizData.forEach((q, idx) => {
+        if (userAnswers[idx] === q.answer) score++;
+      });
+
+      document.getElementById("quiz-score").textContent = `${score} / ${total}`;
+      const feedback = document.getElementById("quiz-feedback");
+      if (answeredCount < total) {
+        feedback.textContent = `Sudah dijawab ${answeredCount} dari ${total} soal. Selesaikan sisanya!`;
+      } else if (score === total) {
+        feedback.textContent = "🏆 Luar biasa! Kamu sudah paham fondasi Git, VS Code, Branch, & Deploy dengan sempurna!";
+      } else if (score >= 3) {
+        feedback.textContent = "👏 Bagus sekali! Cek kembali pembahasan soal yang masih keliru di atas ya.";
+      } else {
+        feedback.textContent = "💪 Santai, baca ulang Bab 1–6 pelan-pelan lalu coba kuisnya lagi!";
+      }
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      renderQuiz();
+      showToast("Kuis diulang dari awal.");
+    }
+
+    // =========================================================================
+    // 7. PROGRESS TRACKER (LOCALSTORAGE) & THEME & NAVIGATION
+    // =========================================================================
+    const STORAGE_KEY = "git_modul_progress_v1";
+
+    function loadProgress() {
+      let saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      } catch (e) {
+        saved = {};
+      }
+
+      const checkboxes = document.querySelectorAll(".step-checkbox");
+      checkboxes.forEach(cb => {
+        const key = cb.getAttribute("data-step");
+        cb.checked = !!saved[key];
+        syncCheckboxVisual(cb);
+      });
+      updateProgressBar();
+    }
+
+    function syncCheckboxVisual(cb) {
+      const parent = cb.closest("label");
+      if (!parent) return;
+      const box = parent.querySelector(".check-box-visual");
+      const icon = parent.querySelector(".check-icon");
+      if (box && icon) {
+        if (cb.checked) {
+          box.classList.add("bg-emerald-500/20", "border-emerald-500");
+          icon.classList.remove("hidden");
+        } else {
+          box.classList.remove("bg-emerald-500/20", "border-emerald-500");
+          icon.classList.add("hidden");
+        }
+      }
+    }
+
+    function updateProgressBar() {
+      const checkboxes = document.querySelectorAll(".step-checkbox");
+      const total = checkboxes.length;
+      let checked = 0;
+      const state = {};
+
+      checkboxes.forEach(cb => {
+        const key = cb.getAttribute("data-step");
+        if (cb.checked) {
+          checked++;
+          state[key] = true;
+        }
+        syncCheckboxVisual(cb);
+      });
+
+      const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+      document.getElementById("progress-bar").style.width = `${pct}%`;
+      document.getElementById("progress-text").textContent = `${pct}% (${checked}/${total})`;
+      document.getElementById("mobile-progress-badge").textContent = `${pct}%`;
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function resetProgress() {
+      document.querySelectorAll(".step-checkbox").forEach(cb => {
+        cb.checked = false;
+      });
+      updateProgressBar();
+      showToast("Checklist progres berhasil di-reset.");
+    }
+
+    // Toggle Dark / Light Mode
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle("dark");
+      const isDark = html.classList.contains("dark");
+      try {
+        localStorage.setItem("git_modul_theme", isDark ? "dark" : "light");
+      } catch (e) {}
+    }
+
+    // Mobile Sidebar Controls
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("sidebar-backdrop");
+    document.getElementById("mobile-menu-btn").addEventListener("click", () => {
+      sidebar.classList.remove("-translate-x-full");
+      backdrop.classList.remove("hidden");
+    });
+    function closeMobileSidebar() {
+      sidebar.classList.add("-translate-x-full");
+      backdrop.classList.add("hidden");
+    }
+
+    // Scroll Spy untuk Navigasi Sidebar
+    function initScrollSpy() {
+      const sections = document.querySelectorAll("section[id^='bab-']");
+      const navLinks = document.querySelectorAll(".nav-link");
+
+      window.addEventListener("scroll", () => {
+        let currentId = "";
+        sections.forEach(sec => {
+          const top = sec.offsetTop - 140;
+          if (window.scrollY >= top) {
+            currentId = sec.getAttribute("id");
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove("bg-blue-500/10", "text-blue-600", "dark:text-gh-blue", "font-bold");
+          if (link.getAttribute("href") === `#${currentId}`) {
+            link.classList.add("bg-blue-500/10", "text-blue-600", "dark:text-gh-blue", "font-bold");
+          }
+        });
+      });
+    }
+
+    // Event Listeners on DOMContentLoaded
+    window.addEventListener("DOMContentLoaded", () => {
+      // Restore theme preference
+      try {
+        const savedTheme = localStorage.getItem("git_modul_theme");
+        if (savedTheme === "light") {
+          document.documentElement.classList.remove("dark");
+        }
+      } catch (e) {}
+
+      renderTerms();
+      renderFlags();
+      initCommandBoxes();
+      renderQuiz();
+      loadProgress();
+      initScrollSpy();
+
+      // Search listener Bab 1
+      document.getElementById("term-search").addEventListener("input", (e) => {
+        renderTerms(e.target.value);
+      });
+
+      // Search & Category filter listener Bab 5
+      document.getElementById("flag-search").addEventListener("input", renderFlags);
+      document.querySelectorAll(".flag-cat-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".flag-cat-btn").forEach(b => {
+            b.classList.remove("bg-pink-600", "text-white");
+            b.classList.add("bg-slate-200", "dark:bg-gh-surface", "text-slate-700", "dark:text-gh-muted");
+          });
+          btn.classList.remove("bg-slate-200", "dark:bg-gh-surface", "text-slate-700", "dark:text-gh-muted");
+          btn.classList.add("bg-pink-600", "text-white");
+          currentFlagCategory = btn.getAttribute("data-cat");
+          renderFlags();
+        });
+      });
+
+      // Checkbox listener
+      document.querySelectorAll(".step-checkbox").forEach(cb => {
+        cb.addEventListener("change", updateProgressBar);
+      });
+    });
+  </script>
+</body>
+</html>
