@@ -189,7 +189,7 @@
       </a>
       <a href="#bab-3" onclick="closeMobileSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 dark:text-gh-muted hover:bg-slate-100 dark:hover:bg-gh-surfaceHover transition">
         <span class="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-600 dark:text-gh-amber font-mono text-xs font-bold flex items-center justify-center shrink-0">03</span>
-        <span class="truncate">Update, Pull, Clone & Undo</span>
+        <span class="truncate">Clone, Pull, Update & Undo</span>
       </a>
       <a href="#bab-4" onclick="closeMobileSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-slate-600 dark:text-gh-muted hover:bg-slate-100 dark:hover:bg-gh-surfaceHover transition">
         <span class="w-6 h-6 rounded-lg bg-purple-500/15 text-purple-600 dark:text-gh-purple font-mono text-xs font-bold flex items-center justify-center shrink-0">04</span>
@@ -249,190 +249,6 @@
             <a href="#bab-5" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold text-sm transition">
               Cari Arti Flag (-u, -m, dll)
             </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- =====================================================================
-           BAB 0 (BARU): PERSIAPAN DARI NOL MUTLAK
-           ===================================================================== -->
-      <section id="bab-0" class="scroll-mt-20 space-y-8">
-        <div class="border-b border-slate-200 dark:border-gh-border pb-4">
-          <span class="text-xs font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">Bab 00 • Pemula Nol Mutlak</span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Persiapan dari Nol Mutlak (Belum Pernah Pakai Git)</h2>
-          <p class="text-slate-600 dark:text-gh-muted text-sm sm:text-base mt-2">
-            Kalau di laptopmu belum pernah terpasang Git, belum punya akun/repository GitHub, dan bingung cara login pertama kali, selesaikan 4 persiapan wajib ini dulu!
-          </p>
-        </div>
-
-        <!-- Langkah 1: Cek & Install Git di Komputer -->
-        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <h3 class="text-lg font-bold flex items-center gap-2">
-              <span class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-500 text-sm flex items-center justify-center font-bold">1</span>
-              <span>Langkah 1: Cek & Install Git di Komputer</span>
-            </h3>
-            <!-- OS Switcher (Windows dulu baru macOS) -->
-            <div class="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-gh-bg border border-slate-200 dark:border-gh-border">
-              <button type="button" id="os-btn-win" onclick="switchOsTab('win')" class="px-3 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white transition">🪟 Windows</button>
-              <button type="button" id="os-btn-mac" onclick="switchOsTab('mac')" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-600 dark:text-gh-muted hover:text-slate-900 dark:hover:text-white transition">🍎 macOS</button>
-            </div>
-          </div>
-
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-gh-muted">
-            Buka Terminal di VS Code (<kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gh-bg border border-slate-300 dark:border-gh-border font-mono text-[11px]">Ctrl + ~</kbd> atau <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gh-bg border border-slate-300 dark:border-gh-border font-mono text-[11px]">Cmd + J</kbd>), lalu cek apakah Git sudah terpasang:
-          </p>
-          <div class="cmd-box" data-cmd="git --version"></div>
-
-          <!-- Panel Windows (Default Aktif) -->
-          <div id="os-panel-win" class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-3">
-            <div class="font-bold text-sm text-blue-600 dark:text-gh-blue">🪟 Cara Install Git di Windows:</div>
-            <ol class="text-xs text-slate-600 dark:text-gh-muted space-y-1.5 list-decimal list-inside leading-relaxed">
-              <li>Buka browser dan kunjungi situs resmi <a href="https://git-scm.com/downloads/win" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline font-semibold">git-scm.com/downloads/win</a>.</li>
-              <li>Unduh installer <strong>64-bit Git for Windows Setup</strong>, lalu buka file <code class="font-mono">.exe</code> tersebut.</li>
-              <li>Klik tombol <strong>Next</strong> terus sampai <strong>Install</strong> (pengaturan bawaannya sudah sangat ideal untuk pemula).</li>
-              <li>Setelah selesai, <strong>tutup dan buka ulang VS Code</strong>, lalu ketik <code class="font-mono text-emerald-500">git --version</code> di Terminal VS Code untuk memastikan versi Git sudah muncul.</li>
-            </ol>
-          </div>
-
-          <!-- Panel macOS -->
-          <div id="os-panel-mac" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-3">
-            <div class="font-bold text-sm text-blue-600 dark:text-gh-blue">🍎 Cara Install Git di macOS:</div>
-            <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
-              Jika muncul tulisan <code class="font-mono">git version 2.x.x</code>, berarti Git sudah siap! Jika belum ada atau muncul pop-up meminta instalasi <em>Command Line Developer Tools</em>, jalankan salah satu perintah ini di Terminal:
-            </p>
-            <div class="cmd-box" data-cmd="# Cara 1: Bawaan Apple Xcode Command Line Tools (Paling Mudah)&#10;xcode-select --install&#10;&#10;# Cara 2: Jika sudah menginstall Homebrew&#10;brew install git"></div>
-          </div>
-        </div>
-
-        <!-- Langkah 2: Setting Identitas Global Pertama Kali -->
-        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <h3 class="text-lg font-bold flex items-center gap-2">
-              <span class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-500 text-sm flex items-center justify-center font-bold">2</span>
-              <span>Langkah 2: Setting Identitas Global Pertama Kali</span>
-            </h3>
-            <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-gh-amber font-bold">Cukup 1x Seumur Hidup per Laptop</span>
-          </div>
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-gh-muted leading-relaxed">
-            <strong>Kenapa ini wajib?</strong> Tanpa mengatur nama dan email, saat kamu mencoba simpan kode (<code class="font-mono">commit</code>), Git akan menolak dengan pesan error <code class="font-mono text-red-500">Author identity unknown</code>. Selain itu, email harus sama dengan email akun GitHub agar riwayat kontribusimu tidak terbaca sebagai nama laptop/MacBook.
-          </p>
-          <div class="cmd-box" data-cmd='git config --global user.name "username-kamu"&#10;git config --global user.email "email-github-kamu@email.com"&#10;git config --global init.defaultBranch main'></div>
-        </div>
-
-        <!-- Langkah 3: Cara Membuat Akun & Repository Baru di GitHub + Simulasi Interaktif -->
-        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-5">
-          <h3 class="text-lg font-bold flex items-center gap-2">
-            <span class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-500 text-sm flex items-center justify-center font-bold">3</span>
-            <span>Langkah 3: Cara Membuat Akun & Repository Baru di GitHub</span>
-          </h3>
-
-          <ol class="text-xs sm:text-sm text-slate-600 dark:text-gh-muted space-y-2 list-decimal list-inside leading-relaxed">
-            <li>Daftar akun gratis di <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline font-semibold">github.com</a> (klik <strong>Sign up</strong> dan verifikasi email).</li>
-            <li>Setelah login, klik ikon <strong>+</strong> di pojok kanan atas halaman GitHub → pilih <strong>New repository</strong>.</li>
-            <li>Isi <strong>Repository name</strong> (contoh: <code class="font-mono text-blue-400">website-portofolio</code>, gunakan huruf kecil dan tanda hubung <code class="font-mono">-</code> tanpa spasi).</li>
-            <li>Pilih <strong>Public</strong> (bisa dilihat semua orang & bisa di-deploy gratis ke GitHub Pages) atau <strong>Private</strong> (hanya kamu yang bisa lihat).</li>
-            <li class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 list-none">
-              ⚠️ <strong>Peringatan Penting Pemula:</strong> Jika kamu ingin mengunggah folder proyek yang <strong>sudah ada di laptopmu</strong>, <strong>JANGAN centang</strong> <em>Add a README file</em>, <em>Add .gitignore</em>, atau <em>Choose a license</em>. Biarkan kosong melompong supaya tidak bentrok saat pertama kali push!
-            </li>
-            <li>Klik tombol hijau <strong>Create repository</strong>, lalu salin link HTTPS yang muncul (berakhiran <code class="font-mono">.git</code>).</li>
-          </ol>
-
-          <!-- SIMULASI INTERAKTIF FORM BUAT REPO GITHUB -->
-          <div class="p-5 rounded-2xl bg-slate-900 border border-slate-700 text-slate-200 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[11px] font-bold">SIMULASI INTERAKTIF</span>
-                <span class="text-xs sm:text-sm font-bold text-white">Coba Form "Create a new repository" GitHub</span>
-              </div>
-            </div>
-
-            <div class="grid sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[11px] font-mono text-slate-400 mb-1">Owner / Username GitHub *</label>
-                <input type="text" id="gh-sim-user" value="username-kamu" oninput="updateGhRepoSim()" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-white focus:outline-none focus:border-blue-500" />
-              </div>
-              <div>
-                <label class="block text-[11px] font-mono text-slate-400 mb-1">Repository name *</label>
-                <input type="text" id="gh-sim-repo" value="proyek-pertamaku" oninput="updateGhRepoSim()" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-white focus:outline-none focus:border-blue-500" />
-              </div>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-4 text-xs">
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="gh-sim-vis" value="Public" checked onchange="updateGhRepoSim()" class="accent-blue-500" />
-                <span>🌐 <strong>Public</strong> (Semua orang bisa lihat)</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="gh-sim-vis" value="Private" onchange="updateGhRepoSim()" class="accent-blue-500" />
-                <span>🔒 <strong>Private</strong> (Hanya kamu)</span>
-              </label>
-            </div>
-
-            <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2">
-              <div class="text-[11px] font-semibold text-slate-400">Initialize this repository with:</div>
-              <label class="flex items-center gap-2 text-xs cursor-pointer">
-                <input type="checkbox" id="gh-sim-readme" onchange="updateGhRepoSim()" class="accent-amber-500" />
-                <span>Add a README file</span>
-              </label>
-              <div id="gh-sim-warning" class="hidden text-[11px] text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-2 rounded-lg">
-                ⚠️ Sebaiknya <strong>hapus centang</strong> ini jika kamu mau upload folder yang sudah ada di laptop, agar repositori GitHub tetap kosong dan tidak error saat <code>git push</code>!
-              </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-              <button type="button" onclick="simulateCreateRepo()" class="px-4 py-2 rounded-xl bg-[#238636] hover:bg-[#2ea043] text-white font-bold text-xs shadow transition">
-                Create repository
-              </button>
-              <div id="gh-sim-result" class="flex-1 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-950 border border-slate-700">
-                <code id="gh-sim-url" class="text-xs font-mono text-blue-400 truncate">https://github.com/username-kamu/proyek-pertamaku.git</code>
-                <button type="button" onclick="copyGhSimUrl()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-blue-600 text-[11px] font-semibold text-white shrink-0 transition">
-                  Salin URL
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Langkah 4: Cara Login / Autentikasi GitHub Saat Pertama Kali Push -->
-        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
-          <h3 class="text-lg font-bold flex items-center gap-2">
-            <span class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-500 text-sm flex items-center justify-center font-bold">4</span>
-            <span>Langkah 4: Cara Login / Autentikasi GitHub Saat Pertama Kali Push</span>
-          </h3>
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-gh-muted leading-relaxed">
-            GitHub <strong>sudah tidak menerima password akun biasa</strong> saat kamu mengunggah kode dari komputer. Pilih salah satu dari 2 cara resmi ini:
-          </p>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <!-- Cara A: VS Code Otomatis -->
-            <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/25 space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="font-bold text-sm text-emerald-600 dark:text-gh-green">✨ Cara A: Otomatis via VS Code</span>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-bold">Paling Mudah</span>
-              </div>
-              <ol class="text-xs text-slate-600 dark:text-gh-muted space-y-1.5 list-decimal list-inside leading-relaxed">
-                <li>Saat pertama kali klik <strong>Publish Branch</strong> atau <strong>Push</strong> di VS Code, muncul pop-up: <em>"The extension 'GitHub' wants to sign in using GitHub"</em>.</li>
-                <li>Klik tombol biru <strong>Allow</strong>.</li>
-                <li>Browser akan terbuka otomatis → klik <strong>Continue</strong> / <strong>Authorize Visual-Studio-Code</strong>.</li>
-                <li>Selesai! VS Code akan otomatis kembali dan mengirim kodemu tanpa perlu ketik password apa pun.</li>
-              </ol>
-            </div>
-
-            <!-- Cara B: Personal Access Token (PAT) -->
-            <div class="p-4 rounded-xl bg-blue-500/5 border border-blue-500/25 space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="font-bold text-sm text-blue-600 dark:text-gh-blue">🔑 Cara B: Personal Access Token (PAT)</span>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/15 text-blue-500 font-bold">Jika Terminal Minta Password</span>
-              </div>
-              <ol class="text-xs text-slate-600 dark:text-gh-muted space-y-1.5 list-decimal list-inside leading-relaxed">
-                <li>Di web GitHub, klik foto profil pojok kanan atas → <strong>Settings</strong>.</li>
-                <li>Scroll paling bawah di menu kiri → klik <strong>Developer settings</strong>.</li>
-                <li>Pilih <strong>Personal access tokens</strong> → <strong>Tokens (classic)</strong> → <strong>Generate new token (classic)</strong>.</li>
-                <li>Beri nama catatan (misal: <code class="font-mono">laptop-ku</code>), centang kotak <strong>repo</strong>, lalu klik <strong>Generate token</strong>.</li>
-                <li>Salin kode panjang berawalan <code class="font-mono text-emerald-500">ghp_...</code> dan tempel (paste) saat Terminal meminta <em>Password</em>.</li>
-              </ol>
-            </div>
           </div>
         </div>
       </section>
@@ -793,56 +609,261 @@
         <div id="bab2-panel-gui" class="hidden space-y-6">
           <!-- Mockup Interaktif Panel Source Control VS Code -->
           <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-gh-surface border-2 border-blue-500/30 shadow-xl space-y-4">
-          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-gh-amber">Bab 03 • Alur Kerja Harian</span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Update Kode, Pull, Clone & Undo di VS Code</h2>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-600 dark:text-gh-blue">Simulasi UI VS Code</span>
+                <h3 class="text-lg font-bold mt-1">Coba Klik Tombol Panel Source Control VS Code</h3>
+              </div>
+              <button type="button" onclick="vscResetMockup()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-gh-bg hover:bg-slate-200 dark:hover:bg-gh-surfaceHover border border-slate-300 dark:border-gh-border transition">
+                🔄 Reset Simulasi VS Code
+              </button>
+            </div>
+
+            <!-- Jendela Mockup VS Code -->
+            <div class="rounded-xl overflow-hidden border border-slate-700 bg-[#1e1e1e] text-slate-200 shadow-2xl">
+              <!-- Title Bar -->
+              <div class="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-[#333333] text-xs">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-3 h-3 rounded-full bg-[#ff5f56]"></span>
+                  <span class="w-3 h-3 rounded-full bg-[#ffbd2e]"></span>
+                  <span class="w-3 h-3 rounded-full bg-[#27c93f]"></span>
+                </div>
+                <span class="font-mono text-[11px] text-slate-400">proyek-pertamaku — Visual Studio Code</span>
+                <span class="text-[11px] font-mono text-blue-400">Source Control</span>
+              </div>
+
+              <!-- Body Mockup -->
+              <div class="grid md:grid-cols-12 min-h-[260px]">
+                <!-- Activity Bar Kiri -->
+                <div class="hidden md:flex md:col-span-1 flex-col items-center py-3 gap-4 bg-[#333333] border-r border-[#252526]">
+                  <div class="w-6 h-6 rounded flex items-center justify-center text-slate-400 text-xs">📄</div>
+                  <div class="relative w-7 h-7 rounded bg-white/10 flex items-center justify-center text-white text-xs font-bold border-l-2 border-blue-400">
+                    <span>⎇</span>
+                    <span id="vsc-badge-count" class="hidden absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-500 text-[10px] text-white flex items-center justify-center font-bold">2</span>
+                  </div>
+                </div>
+
+                <!-- Sidebar Source Control -->
+                <div class="md:col-span-5 p-4 bg-[#252526] border-b md:border-b-0 md:border-r border-[#333333] space-y-3">
+                  <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <span>Source Control</span>
+                    <span class="font-mono text-slate-500">•••</span>
+                  </div>
+
+                  <!-- State 0: Belum Initialize -->
+                  <div id="vsc-state-init" class="space-y-3 pt-2">
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                      Folder saat ini belum memiliki repositori Git. Klik tombol di bawah untuk mulai melacak perubahan:
+                    </p>
+                    <button type="button" onclick="vscInitRepo()" class="w-full py-2 px-3 rounded bg-[#007acc] hover:bg-[#1f8ad2] text-white font-semibold text-xs shadow transition">
+                      Initialize Repository
+                    </button>
+                  </div>
+
+                  <!-- State 1..4: Aktif -->
+                  <div id="vsc-state-active" class="hidden space-y-3">
+                    <!-- Kotak Pesan Commit -->
+                    <input type="text" id="vsc-commit-input" placeholder="Message (ketik pesan commit)..." class="w-full px-2.5 py-1.5 rounded bg-[#3c3c3c] border border-[#555555] text-xs text-white focus:outline-none focus:border-blue-400" />
+
+                    <!-- Tombol Utama Dinamis (Commit / Publish Branch / Sync Changes) -->
+                    <div class="relative">
+                      <button type="button" id="vsc-main-btn" onclick="vscHandleMainBtn()" class="w-full py-2 px-3 rounded bg-[#007acc] hover:bg-[#1f8ad2] text-white font-semibold text-xs shadow transition flex items-center justify-center gap-1.5">
+                        <span>✓ Commit</span>
+                      </button>
+
+                      <!-- Dropdown Pilihan Publish Public / Private -->
+                      <div id="vsc-publish-dropdown" class="hidden mt-1.5 rounded-lg bg-[#2d2d30] border border-[#454545] shadow-xl overflow-hidden text-xs">
+                        <button type="button" onclick="vscPublishRepo('Private')" class="w-full text-left px-3 py-2 hover:bg-[#094771] text-slate-200 flex items-center gap-2 transition">
+                          <span>🔒</span>
+                          <span>Publish to GitHub <strong>private</strong> repository</span>
+                        </button>
+                        <button type="button" onclick="vscPublishRepo('Public')" class="w-full text-left px-3 py-2 hover:bg-[#094771] text-slate-200 flex items-center gap-2 border-t border-[#3e3e42] transition">
+                          <span>🌐</span>
+                          <span>Publish to GitHub <strong>public</strong> repository</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Daftar Changes (Unstaged) -->
+                    <div id="vsc-changes-section" class="space-y-1.5 pt-1">
+                      <div class="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                        <span>Changes (2)</span>
+                        <button type="button" onclick="vscStageAll()" class="px-2 py-0.5 rounded bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white font-mono text-[11px] transition">
+                          + Stage All
+                        </button>
+                      </div>
+                      <div class="text-xs font-mono space-y-1 pl-2 text-emerald-400">
+                        <div class="flex justify-between"><span>index.html</span><span>U</span></div>
+                        <div class="flex justify-between"><span>style.css</span><span>U</span></div>
+                      </div>
+                    </div>
+
+                    <!-- Daftar Staged Changes -->
+                    <div id="vsc-staged-section" class="hidden space-y-1.5 pt-1">
+                      <div class="text-[11px] font-bold text-emerald-400">Staged Changes (2)</div>
+                      <div class="text-xs font-mono space-y-1 pl-2 text-emerald-300">
+                        <div class="flex justify-between"><span>index.html</span><span>A</span></div>
+                        <div class="flex justify-between"><span>style.css</span><span>A</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Panel Panduan Kanan -->
+                <div class="md:col-span-6 p-5 bg-[#1e1e1e] flex flex-col justify-between space-y-4">
+                  <div class="space-y-2">
+                    <div class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">Panduan Langkah Simulasi:</div>
+                    <p id="vsc-guide-text" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                      <strong>Langkah 1:</strong> Klik tombol biru <strong>Initialize Repository</strong> di sebelah kiri untuk mengaktifkan Git di folder ini.
+                    </p>
+                  </div>
+                  <div id="vsc-done-banner" class="hidden p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs text-emerald-300">
+                    🎉 Mantap! Seperti itulah cara upload proyek ke GitHub lewat tombol UI VS Code tanpa mengetik satu baris perintah pun!
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Bar Bawah VS Code -->
+              <div class="flex items-center justify-between px-3 py-1 bg-[#007acc] text-white font-mono text-[11px]">
+                <div class="flex items-center gap-3">
+                  <span id="vsc-statusbar-branch">⊗ belum ada git</span>
+                  <span id="vsc-statusbar-sync" class="hidden">🔄 0↓ 0↑</span>
+                </div>
+                <span>UTF-8 • HTML</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2 Cara Lengkap Klik Tombol VS Code -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <!-- Cara A: Auto-Publish -->
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-bold text-base text-emerald-600 dark:text-gh-green">✨ Cara A: Auto-Publish Langsung dari VS Code</h3>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-bold">Paling Praktis</span>
+              </div>
+              <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                Gunakan cara ini kalau kamu <strong>belum membuat repositori</strong> di web GitHub. VS Code akan otomatis membuatkan repositori baru sekaligus meng-upload semua filemu!
+              </p>
+              <ol class="text-xs text-slate-600 dark:text-gh-muted space-y-2 list-decimal list-inside leading-relaxed">
+                <li>Buka folder proyek di VS Code, lalu klik ikon <strong>Source Control</strong> di sidebar kiri (<kbd class="px-1 py-0.5 rounded bg-slate-100 dark:bg-gh-bg border border-slate-300 dark:border-gh-border font-mono">Ctrl+Shift+G</kbd>).</li>
+                <li>Klik tombol biru <strong>Initialize Repository</strong>.</li>
+                <li>Arahkan kursor ke tulisan <strong>Changes</strong> → klik ikon <strong>+ (Stage All Changes)</strong>.</li>
+                <li>Tulis pesan di kotak <em>Message</em> (misal: <code class="font-mono">first commit</code>) → klik tombol biru <strong>Commit</strong>.</li>
+                <li>Klik tombol hijau/biru <strong>Publish Branch</strong> → pilih <strong>Publish to GitHub public repository</strong> (atau <em>private</em>). Selesai!</li>
+              </ol>
+            </div>
+
+            <!-- Cara B: Hubungkan Manual ke Repo Kosong -->
+            <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-bold text-base text-blue-600 dark:text-gh-blue">🔗 Cara B: Hubungkan ke Repo yang Sudah Dibuat</h3>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/15 text-blue-500 font-bold">Manual Remote</span>
+              </div>
+              <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                Gunakan cara ini kalau kamu <strong>sudah terlanjur membuat repositori kosong</strong> di web GitHub dan ingin menghubungkannya lewat klik tombol:
+              </p>
+              <ol class="text-xs text-slate-600 dark:text-gh-muted space-y-2 list-decimal list-inside leading-relaxed">
+                <li>Lakukan langkah 1 sampai 4 di atas (<strong>Initialize</strong> → klik <strong>+</strong> → tulis pesan → klik <strong>Commit</strong>).</li>
+                <li>Di bagian atas panel Source Control, klik ikon titik tiga <strong>••• (Views and More Actions)</strong>.</li>
+                <li>Pilih menu <strong>Remote</strong> → klik <strong>Add Remote...</strong></li>
+                <li>Tempel URL HTTPS repositori GitHub-mu (<code class="font-mono text-blue-400">https://github.com/user/repo.git</code>) → tekan <strong>Enter</strong>.</li>
+                <li>Ketik nama remote: <code class="font-mono text-emerald-500">origin</code> → tekan <strong>Enter</strong>.</li>
+                <li>Klik tombol biru <strong>Publish Branch</strong>! Semua file langsung meluncur ke repositori tersebut.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           BAB 3: ALUR KERJA BERURUTAN — CLONE, PULL, UPDATE/PUSH & UNDO
+           ===================================================================== -->
+      <section id="bab-3" class="scroll-mt-20 space-y-8">
+        <div class="border-b border-slate-200 dark:border-gh-border pb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-gh-amber">Bab 03 • Alur Kerja Kronologis</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Alur Kerja Berurutan: Clone, Pull, Update & Undo</h2>
           <p class="text-slate-600 dark:text-gh-muted text-sm sm:text-base mt-2">
-            Setelah proyek berhasil di-upload pertama kali, sehari-hari kamu cuma bakal muter di 4 skenario ini!
+            Biar nggak bingung mana yang dijalankan duluan, ikuti urutan kerja yang benar dari pertama kali mengunduh proyek (<code class="font-mono text-cyan-500">git clone</code>), menarik update terbaru (<code class="font-mono text-blue-500">git pull</code>), hingga mengunggah perubahanmu (<code class="font-mono text-emerald-500">git push</code>).
           </p>
         </div>
 
-        <!-- Skenario 1: Update & Push -->
+        <!-- Peta Alur Kronologis Visual -->
+        <div class="p-5 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-emerald-500/10 border border-blue-500/25 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-blue-600 dark:text-gh-blue">🗺️ Urutan Siklus Kerja dari Awal sampai Selesai</span>
+            <span class="text-[11px] text-slate-500 dark:text-gh-muted">Ulangi Tahap 2 → 3 setiap hari</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
+            <div class="p-3 rounded-xl bg-white/90 dark:bg-gh-surface border border-cyan-500/30">
+              <div class="font-mono font-bold text-cyan-600 dark:text-cyan-400">1. git clone</div>
+              <p class="text-[11px] text-slate-600 dark:text-gh-muted mt-1">Unduh proyek dari GitHub ke laptop <strong>(cukup 1x di awal)</strong>.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-white/90 dark:bg-gh-surface border border-blue-500/30">
+              <div class="font-mono font-bold text-blue-600 dark:text-gh-blue">2. git pull</div>
+              <p class="text-[11px] text-slate-600 dark:text-gh-muted mt-1">Tarik update terbaru <strong>(wajib sebelum mulai ngoding)</strong>.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-white/90 dark:bg-gh-surface border border-emerald-500/30">
+              <div class="font-mono font-bold text-emerald-600 dark:text-gh-green">3. add → commit → push</div>
+              <p class="text-[11px] text-slate-600 dark:text-gh-muted mt-1">Edit kode di VS Code, simpan, lalu <strong>kirim ke GitHub</strong>.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-white/90 dark:bg-gh-surface border border-amber-500/30">
+              <div class="font-mono font-bold text-amber-600 dark:text-gh-amber">4. Undo / Log</div>
+              <p class="text-[11px] text-slate-600 dark:text-gh-muted mt-1">Gunakan fitur mesin waktu kalau ada <strong>salah edit/typo</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tahap 1: Clone (Mulai dari Awal Ambil Proyek) -->
         <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
           <div class="flex items-center justify-between flex-wrap gap-2">
             <h3 class="text-lg font-bold flex items-center gap-2">
-              <span class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-500 text-sm flex items-center justify-center font-bold">1</span>
-              <span>Skenario 1: Update & Push Perubahan Baru</span>
+              <span class="w-7 h-7 rounded-lg bg-cyan-500/15 text-cyan-500 text-sm flex items-center justify-center font-bold">1</span>
+              <span>Tahap 1: Unduh Proyek dari GitHub ke Laptop (<code class="font-mono text-cyan-500">git clone</code>)</span>
             </h3>
-            <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-gh-green">Paling Sering Dipakai</span>
+            <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">Cukup 1x di Awal</span>
           </div>
-          <p class="text-sm text-slate-600 dark:text-gh-muted">
-            Misalnya kamu baru saja mengedit <code class="font-mono text-xs">index.html</code> atau menambah file CSS baru. Kamu bisa mengunggahnya lewat <strong>Cara Terminal</strong> atau <strong>Cara Klik Tombol UI VS Code</strong>:
+          <p class="text-sm text-slate-600 dark:text-gh-muted leading-relaxed">
+            Jalankan tahap ini kalau proyeknya <strong>sudah ada di GitHub tapi belum ada di laptopmu</strong> (misalnya ganti laptop, ambil proyek tim, atau mengunduh ulang repositorimu sendiri). <strong>Jangan download file ZIP</strong> dari GitHub—gunakan <code class="font-mono text-xs">git clone</code> supaya riwayat Git dan koneksi <code class="font-mono text-xs">origin</code> otomatis terpasang!
           </p>
 
           <div class="grid md:grid-cols-2 gap-4">
             <!-- Cara Terminal -->
-            <div class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-3">
-              <div class="font-bold text-sm text-blue-600 dark:text-gh-blue">⌨️ Cara A: Lewat Terminal (3 Perintah Sakti)</div>
-              <p class="text-xs text-slate-600 dark:text-gh-muted">Tidak perlu <code class="font-mono">git init</code> atau <code class="font-mono">remote add</code> lagi! Cukup jalankan:</p>
-              <div class="cmd-box" data-cmd='git status&#10;git add .&#10;git commit -m "update tampilan navbar"&#10;git push'></div>
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-2.5">
+              <div class="font-bold text-sm text-cyan-600 dark:text-cyan-400">⌨️ Cara A: Lewat Terminal</div>
+              <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                Buka terminal di folder tujuan (misal <code class="font-mono">Documents</code>), jalankan <code class="font-mono">git clone</code>, lalu masuk ke dalam folder proyek yang baru terunduh:
+              </p>
+              <div class="cmd-box" data-cmd="git clone https://github.com/username/nama-repo.git&#10;cd nama-repo&#10;code ."></div>
+              <p class="text-[11px] text-slate-500 dark:text-gh-muted">
+                *(Perintah <code class="font-mono">code .</code> otomatis membuka folder proyek tersebut di jendela VS Code).*
+              </p>
             </div>
 
             <!-- Cara UI VS Code -->
             <div class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-2.5">
-              <div class="font-bold text-sm text-purple-600 dark:text-gh-purple">🖱️ Cara B: Klik Tombol di UI VS Code (Tanpa Ketik)</div>
+              <div class="font-bold text-sm text-purple-600 dark:text-gh-purple">🖱️ Cara B: Klik Tombol di UI VS Code</div>
               <ol class="text-xs text-slate-600 dark:text-gh-muted space-y-2 list-decimal list-inside leading-relaxed">
-                <li>Klik ikon <strong>Source Control</strong> (ikon cabang di sidebar kiri VS Code, ada angka biru jumlah file berubah).</li>
-                <li>Arahkan kursor ke tulisan <strong>Changes</strong>, lalu klik ikon <strong>+ (Stage All Changes)</strong>.</li>
-                <li>Ketik pesan perubahan di kotak <em>Message</em> (misal: <code class="font-mono">fix warna tombol</code>).</li>
-                <li>Klik tombol biru <strong>Commit</strong>.</li>
-                <li>Tombol biru berubah jadi <strong>Sync Changes</strong> → klik tombol itu untuk langsung <code class="font-mono">push</code> ke GitHub!</li>
+                <li>Buka jendela baru VS Code (tanpa membuka folder apa pun).</li>
+                <li>Klik tulisan biru <strong>Clone Git Repository...</strong> di layar <em>Welcome</em> (atau tekan <kbd class="px-1 py-0.5 rounded bg-white dark:bg-gh-surface border border-slate-300 dark:border-gh-border font-mono">Ctrl/Cmd+Shift+P</kbd> lalu ketik <code class="font-mono">Git: Clone</code>).</li>
+                <li>Tempel URL HTTPS repositori GitHub-mu → tekan <strong>Enter</strong>.</li>
+                <li>Pilih folder penyimpanan di laptop → klik <strong>Open</strong> saat muncul pop-up di pojok kanan bawah.</li>
               </ol>
             </div>
           </div>
         </div>
 
-        <!-- Skenario 2: Pull vs Fetch -->
+        <!-- Tahap 2: Pull vs Fetch (Sebelum Mulai Ngoding Lagi) -->
         <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
-          <h3 class="text-lg font-bold flex items-center gap-2">
-            <span class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-500 text-sm flex items-center justify-center font-bold">2</span>
-            <span>Skenario 2: Mengambil Update Terbaru dari GitHub (<code class="font-mono text-blue-500">pull</code> vs <code class="font-mono text-purple-500">fetch</code>)</span>
-          </h3>
-          <p class="text-sm text-slate-600 dark:text-gh-muted">
-            Kalau teman satu tim baru upload kode baru ke GitHub (atau kamu edit file langsung di web GitHub), kamu harus menyedot perubahan itu ke laptopmu sebelum mulai ngoding lagi.
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-500 text-sm flex items-center justify-center font-bold">2</span>
+              <span>Tahap 2: Tarik Update Terbaru Sebelum Mulai Ngoding (<code class="font-mono text-blue-500">pull</code> vs <code class="font-mono text-purple-500">fetch</code>)</span>
+            </h3>
+            <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-gh-blue">Wajib Sebelum Kerja</span>
+          </div>
+          <p class="text-sm text-slate-600 dark:text-gh-muted leading-relaxed">
+            Setelah folder proyek sudah ada di laptopmu, <strong>biasakan selalu menarik update dulu</strong> setiap kali mau mulai ngoding! Apalagi kalau kamu kerja bareng teman tim atau sempat mengedit kode dari perangkat lain / web GitHub.
           </p>
 
           <div class="grid sm:grid-cols-2 gap-4">
@@ -869,50 +890,132 @@
           </div>
         </div>
 
-        <!-- Skenario 3 & 4 -->
-        <div class="grid md:grid-cols-2 gap-4">
-          <!-- Skenario 3: Clone -->
-          <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-3">
-            <h3 class="text-base font-bold flex items-center gap-2">
-              <span class="w-6 h-6 rounded-lg bg-cyan-500/15 text-cyan-500 text-xs flex items-center justify-center font-bold">3</span>
-              <span>Skenario 3: Unduh Proyek ke Laptop Baru (Clone)</span>
+        <!-- Tahap 3: Edit Kode, Simpan & Upload (Update & Push) -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-5">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-500 text-sm flex items-center justify-center font-bold">3</span>
+              <span>Tahap 3: Edit Kode, Simpan & Upload ke GitHub (<code class="font-mono text-emerald-500">add</code> → <code class="font-mono text-emerald-500">commit</code> → <code class="font-mono text-emerald-500">push</code>)</span>
             </h3>
-            <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
-              Ganti laptop atau mau unduh repo GitHub ke folder lokal? Jangan download ZIP! Pakai <code class="font-mono">git clone</code> supaya riwayat Git dan link <code class="font-mono">origin</code> otomatis terhubung.
+            <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-gh-green">Setelah Selesai Ngoding</span>
+          </div>
+          <p class="text-sm text-slate-600 dark:text-gh-muted leading-relaxed">
+            Setelah selesai mengedit <code class="font-mono text-xs">index.html</code> atau menambah file baru di VS Code, kamu <strong>tidak perlu</strong> mengulang <code class="font-mono text-xs">git clone</code>, <code class="font-mono text-xs">git init</code>, ataupun <code class="font-mono text-xs">remote add</code> lagi! Cukup bungkus dan kirim perubahanmu lewat salah satu cara berikut:
+          </p>
+
+          <!-- Cara A: Lewat Terminal (Dipisah per Perintah + Penjelasan Detail) -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-gh-bg border border-blue-500/25 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="font-bold text-base text-blue-600 dark:text-gh-blue">⌨️ Cara A: Lewat Terminal (Urutan Wajib — Dipisah per Perintah)</div>
+              <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-gh-blue">Jalankan 1 per 1 dari Atas</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-gh-muted">
+              Jalankan keempat perintah berikut secara berurutan di Terminal VS Code setiap kali kamu selesai melakukan perubahan kode:
             </p>
-            <div class="cmd-box" data-cmd="git clone https://github.com/username/nama-repo.git"></div>
-            <p class="text-[11px] text-slate-500 dark:text-gh-muted leading-relaxed">
-              🖱️ <strong>Versi Klik Tombol VS Code:</strong> Buka jendela baru VS Code → klik tulisan biru <strong>Clone Git Repository...</strong> di layar Welcome (atau tekan <kbd class="px-1 py-0.5 rounded bg-slate-100 dark:bg-gh-bg border border-slate-300 dark:border-gh-border font-mono">Ctrl/Cmd+Shift+P</kbd> ketik <code class="font-mono">Git: Clone</code>) → tempel URL GitHub → pilih folder tujuan.
-            </p>
+
+            <div class="grid md:grid-cols-2 gap-3.5">
+              <!-- Perintah 1: git status -->
+              <div class="p-4 rounded-xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2.5 flex flex-col justify-between">
+                <div class="space-y-1.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-md bg-blue-500/15 text-blue-500 font-mono text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                    <span class="font-bold text-xs sm:text-sm text-slate-800 dark:text-white">Cek File yang Berubah</span>
+                  </div>
+                  <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                    <strong>Fungsi perintah:</strong> Melihat daftar file mana saja yang baru dibuat (merah/<em>Untracked</em>), sudah diedit (<em>Modified</em>), atau sudah siap simpan (hijau/<em>Staged</em>) sebelum dikirim ke GitHub.
+                  </p>
+                </div>
+                <div class="cmd-box" data-cmd="git status"></div>
+              </div>
+
+              <!-- Perintah 2: git add . -->
+              <div class="p-4 rounded-xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2.5 flex flex-col justify-between">
+                <div class="space-y-1.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-md bg-blue-500/15 text-blue-500 font-mono text-xs font-bold flex items-center justify-center shrink-0">2</span>
+                    <span class="font-bold text-xs sm:text-sm text-slate-800 dark:text-white">Masukkan ke Keranjang (Staging Area)</span>
+                  </div>
+                  <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                    <strong>Fungsi perintah:</strong> Menandai file yang berubah agar masuk ruang tunggu (<em>Staging</em>). Tanda titik (<code class="font-mono text-emerald-500">.</code>) berarti memilih <strong>semua file</strong> sekaligus (atau ketik <code class="font-mono">git add index.html</code> untuk 1 file saja).
+                  </p>
+                </div>
+                <div class="cmd-box" data-cmd="git add ."></div>
+              </div>
+
+              <!-- Perintah 3: git commit -m -->
+              <div class="p-4 rounded-xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2.5 flex flex-col justify-between">
+                <div class="space-y-1.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-md bg-blue-500/15 text-blue-500 font-mono text-xs font-bold flex items-center justify-center shrink-0">3</span>
+                    <span class="font-bold text-xs sm:text-sm text-slate-800 dark:text-white">Simpan Permanen & Beri Catatan</span>
+                  </div>
+                  <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                    <strong>Fungsi perintah:</strong> Membungkus perubahan di <em>Staging</em> menjadi satu titik simpanan permanen (<em>snapshot</em>) di riwayat Git lokal. Flag <code class="font-mono text-pink-500">-m</code> dipakai untuk menulis pesan catatan perubahannya.
+                  </p>
+                </div>
+                <div class="cmd-box" data-cmd='git commit -m "update tampilan navbar"'></div>
+              </div>
+
+              <!-- Perintah 4: git push -->
+              <div class="p-4 rounded-xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-2.5 flex flex-col justify-between">
+                <div class="space-y-1.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-md bg-emerald-500/15 text-emerald-500 font-mono text-xs font-bold flex items-center justify-center shrink-0">4</span>
+                    <span class="font-bold text-xs sm:text-sm text-slate-800 dark:text-white">Upload (Terbangkan) ke GitHub</span>
+                  </div>
+                  <p class="text-xs text-slate-600 dark:text-gh-muted leading-relaxed">
+                    <strong>Fungsi perintah:</strong> Mengirim seluruh <em>commit</em> baru dari laptop ke repositori GitHub di internet. Karena dulu sudah pakai <code class="font-mono">-u</code>, sekarang cukup ketik <code class="font-mono text-emerald-500">git push</code> saja!
+                  </p>
+                </div>
+                <div class="cmd-box" data-cmd="git push"></div>
+              </div>
+            </div>
           </div>
 
-          <!-- Skenario 4: Mesin Waktu / Undo -->
-          <div class="p-5 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-3">
-            <h3 class="text-base font-bold flex items-center gap-2">
-              <span class="w-6 h-6 rounded-lg bg-red-500/15 text-red-500 text-xs flex items-center justify-center font-bold">4</span>
-              <span>Skenario 4: "Mesin Waktu" / Batalkan Kesalahan</span>
+          <!-- Cara B: Klik Tombol di UI VS Code -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-gh-bg border border-purple-500/25 space-y-2.5">
+            <div class="font-bold text-base text-purple-600 dark:text-gh-purple">🖱️ Cara B: Klik Tombol di UI VS Code (Tanpa Ketik Kode)</div>
+            <ol class="text-xs text-slate-600 dark:text-gh-muted space-y-2 list-decimal list-inside leading-relaxed">
+              <li>Klik ikon <strong>Source Control</strong> (ikon cabang di sidebar kiri VS Code, ada angka biru jumlah file berubah).</li>
+              <li>Arahkan kursor ke tulisan <strong>Changes</strong>, lalu klik ikon <strong>+ (Stage All Changes)</strong> — ini sama dengan <code class="font-mono">git add .</code>.</li>
+              <li>Ketik pesan perubahan di kotak <em>Message</em> (misal: <code class="font-mono">fix warna tombol</code>).</li>
+              <li>Klik tombol biru <strong>Commit</strong> — ini sama dengan <code class="font-mono">git commit -m "..."</code>.</li>
+              <li>Tombol biru berubah jadi <strong>Sync Changes</strong> → klik tombol itu untuk langsung <code class="font-mono">git push</code> ke GitHub!</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Tahap 4: Mesin Waktu / Undo Kesalahan -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-gh-surface border border-slate-200 dark:border-gh-border space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-red-500/15 text-red-500 text-sm flex items-center justify-center font-bold">4</span>
+              <span>Tahap 4: "Mesin Waktu" / Batalkan Kesalahan (Undo & Riwayat)</span>
             </h3>
-            <div class="space-y-2.5 text-xs text-slate-600 dark:text-gh-muted">
-              <div>
-                <strong class="text-slate-800 dark:text-gh-text">• Batalkan editan file sebelum di-commit:</strong>
-                <div class="cmd-box mt-1" data-cmd="git checkout -- index.html"></div>
-                <span class="text-[11px] block mt-1">(Atau di panel Source Control VS Code, klik ikon <strong>panah melengkung balik / Discard Changes</strong> di sebelah nama file).</span>
-              </div>
-              <div>
-                <strong class="text-slate-800 dark:text-gh-text">• Typo pesan commit terakhir (sebelum push):</strong>
-                <div class="cmd-box mt-1" data-cmd='git commit --amend -m "pesan commit yang benar"'></div>
-              </div>
-              <div>
-                <strong class="text-slate-800 dark:text-gh-text">• Lihat riwayat simpanan (commit) ringkas:</strong>
-                <li>Klik tombol biru <strong>Publish Branch</strong>! Semua file langsung meluncur ke repositori tersebut.</li>
-              </ol>
+            <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-red-500/10 text-red-600 dark:text-gh-red">Tombol Darurat</span>
+          </div>
+          <div class="grid md:grid-cols-3 gap-3.5 text-xs text-slate-600 dark:text-gh-muted">
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-2">
+              <strong class="text-slate-800 dark:text-gh-text block">1. Batalkan editan file sebelum di-commit:</strong>
+              <div class="cmd-box" data-cmd="git checkout -- index.html"></div>
+              <span class="text-[11px] block leading-relaxed">(Atau di panel Source Control VS Code, klik ikon <strong>panah melengkung balik / Discard Changes</strong> di sebelah nama file).</span>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-2">
+              <strong class="text-slate-800 dark:text-gh-text block">2. Typo pesan commit terakhir (sebelum push):</strong>
+              <div class="cmd-box" data-cmd='git commit --amend -m "pesan commit yang benar"'></div>
+              <span class="text-[11px] block leading-relaxed">Memperbaiki catatan commit terakhir tanpa menambah titik commit baru.</span>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-gh-bg border border-slate-200 dark:border-gh-border space-y-2">
+              <strong class="text-slate-800 dark:text-gh-text block">3. Lihat riwayat simpanan (commit) ringkas:</strong>
+              <div class="cmd-box" data-cmd="git log --oneline"></div>
+              <span class="text-[11px] block leading-relaxed">Menampilkan daftar kode unik commit & pesan perubahannya dalam 1 baris rapi.</span>
             </div>
           </div>
         </div>
       </section>
 
       <!-- =====================================================================
-           BAB 3: RUTINITAS HARIAN — UPDATE KODE, PULL, CLONE & UNDO DI VS CODE
+           BAB 4: KUPAS TUNTAS MATERI BRANCH (CABANG KERJA)
            ===================================================================== -->
       <section id="bab-4" class="scroll-mt-20 space-y-8">
         <div class="border-b border-slate-200 dark:border-gh-border pb-4">
